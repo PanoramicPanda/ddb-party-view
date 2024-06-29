@@ -1,0 +1,17 @@
+{
+  "manifestVersion": 1,
+  "name": "D&D Beyond Party View",
+  "summary": "A freshly generated symbiote",
+  "descriptionFilePath": "/README.md",
+  "version": "0.0.1",
+  "license": "MIT",
+  "about": {
+    "website": "https://github.com/PanoramicPanda/ddb-party-view",
+    "authors": ["Panoramic Panda"]
+  },
+  "kind": "webView",
+  "entryPoint": "/index.html",
+  "controls": {
+    "reload": true
+  }
+}
