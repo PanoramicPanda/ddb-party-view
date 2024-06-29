@@ -12,6 +12,15 @@
     <script type="module">
       if (import.meta.env.VITE_ENV === 'development') {
         import('/src/scripts/test_output.js');
+        // Constrain the width of the body to 599px in development
+        const style = document.createElement('style');
+        style.textContent = `
+          body {
+            max-width: 599px;
+            margin: 0 auto;
+          }
+        `;
+        document.head.appendChild(style);
       }
     </script>
   </body>
