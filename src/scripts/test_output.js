@@ -6,7 +6,7 @@ CHARACTER_IDS.forEach(async (charId) => {
     try {
         let characterData = await character.getCharacter();
         character.setCharacter(characterData);
-        console.log(character.character['data']['name']);
+        console.log(character.character['name']);
         console.log('STR ' + character.getAbilityScore('STR'));
         console.log('DEX ' + character.getAbilityScore('DEX'));
         console.log('CON ' + character.getAbilityScore('CON'));

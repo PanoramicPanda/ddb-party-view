@@ -1,4 +1,4 @@
-import { API_ENDPOINT as CONFIG_API_ENDPOINT } from './config.js';
+import {API_ENDPOINT as CONFIG_API_ENDPOINT} from './config.js';
 
 const API_ENDPOINT = import.meta.env.VITE_ENV === 'development' ? import.meta.env.VITE_API_ENDPOINT : CONFIG_API_ENDPOINT;
 
@@ -38,7 +38,7 @@ class StatGrabber {
     }
 
     setCharacter(data){
-        this.character = data;
+        this.character = data['data'];
     }
 
     calculateAbilityModifier(abilityScore) {
@@ -49,10 +49,10 @@ class StatGrabber {
             return 0;
         }
         const lookup = this.scoreLookups[ability];
-        let scoreBase = this.character['data']['stats'][lookup[0]]['value'];
-        let scoreBonusInput = this.character['data']['bonusStats'][lookup[0]]['value'];
+        let scoreBase = this.character['stats'][lookup[0]]['value'];
+        let scoreBonusInput = this.character['bonusStats'][lookup[0]]['value'];
         let scoreBonus = Number.isInteger(scoreBonusInput) ? scoreBonusInput : 0;
-        let modifiers = this.character['data']['modifiers'];
+        let modifiers = this.character['modifiers'];
         let scoreModifier = 0;
         let scoreOverride = 0;
         for (let mod in modifiers){
@@ -72,7 +72,7 @@ class StatGrabber {
             return 0;
         }
         let level = 0;
-        let classList = this.character['data']['classes'];
+        let classList = this.character['classes'];
         for (let charClass of classList){
             level += charClass['level'];
         }
@@ -83,7 +83,7 @@ class StatGrabber {
         if (this.character === undefined){
             return 0;
         }
-        let baseHP = this.character['data']['baseHitPoints'];
+        let baseHP = this.character['baseHitPoints'];
         let conScore = this.getAbilityScore('CON');
         let conMod = this.calculateAbilityModifier(conScore);
         let level = this.getTotalLevel();
@@ -96,9 +96,9 @@ class StatGrabber {
             return 0;
         }
         let maxHP = this.getMaxHP();
-        let removedHP = this.character['data']['removedHitPoints'];
-        this.tempHP = this.character['data']['temporaryHitPoints'];
-        let bonusHPInput = this.character['data']['bonusHitPoints'];
+        let removedHP = this.character['removedHitPoints'];
+        this.tempHP = this.character['temporaryHitPoints'];
+        let bonusHPInput = this.character['bonusHitPoints'];
         let bonusHP = Number.isInteger(bonusHPInput) ? bonusHPInput : 0;
         let hpRemaining = maxHP - removedHP + this.tempHP + bonusHP;
         return hpRemaining;
@@ -111,7 +111,7 @@ class StatGrabber {
         let AC = 0;
         let dexScore = this.getAbilityScore('DEX');
         let dexMod = this.calculateAbilityModifier(dexScore);
-        this.character.data.inventory.forEach((item) => {
+        this.character.inventory.forEach((item) => {
             if (item.equipped && item.definition.filterType === 'Armor'){
                 switch (item.definition.armorTypeId){
                     case 1: // Light Armor
@@ -150,7 +150,7 @@ class StatGrabber {
             return 0;
         }
         let bonusAC = 0;
-        const modifiers = this.character['data']['modifiers'];
+        const modifiers = this.character['modifiers'];
         for (let mod in modifiers){
             for (let entry of modifiers[mod]){
                 if (entry['type'] === 'bonus' && entry['subType'] === 'armor-class'){
@@ -159,7 +159,7 @@ class StatGrabber {
             }
         }
 
-        const characterValues = this.character['data']['characterValues'];
+        const characterValues = this.character['characterValues'];
         for (let entry of characterValues) {
             if (entry['typeId'] === 3 && Number.isInteger(entry['value'])) {
                 bonusAC += entry['value'];
