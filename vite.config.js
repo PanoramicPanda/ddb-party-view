@@ -1,9 +1,6 @@
 // vite.config.js
 import { defineConfig } from 'vite';
-import { API_ENDPOINT } from './src/scripts/config.js';
 import react from '@vitejs/plugin-react';
-
-const isDevelopment = process.env.NODE_ENV === 'development';
 
 export default defineConfig({
   base: './',
