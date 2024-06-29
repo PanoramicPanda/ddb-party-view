@@ -177,6 +177,13 @@ class StatGrabber {
         let bonusAC = this.calcBonusAC();
         return standardAC + bonusAC;
     }
+
+    getInspiration(){
+        if (this.character === undefined){
+            return 0;
+        }
+        return this.character['inspiration'];
+    }
 }
 
 export default StatGrabber;

@@ -17,6 +17,7 @@ CHARACTER_IDS.forEach(async (charId) => {
         console.log('Max HP ' + character.getMaxHP());
         console.log('Current HP ' + character.getCurrentHP());
         console.log('AC ' + character.calcAC());
+        console.log('Has Inspiration: ' + character.getInspiration());
         console.log('==========');
     } catch (error) {
         console.error(`Error processing character ID ${charId}:`, error);
