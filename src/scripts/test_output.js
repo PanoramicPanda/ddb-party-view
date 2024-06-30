@@ -18,6 +18,9 @@ CHARACTER_IDS.forEach(async (charId) => {
         console.log('Current HP ' + character.getCurrentHP());
         console.log('AC ' + character.calcAC());
         console.log('Has Inspiration: ' + character.getInspiration());
+        if (character.isClass('Monk')){
+            console.log('Ki Points [used, max]: ' + character.getKiPointsUsedAndMax());
+        }
         if (character.canCastSpells()){
             console.log('Used Level 1 Spell Slots: ' + character.getUsedSpellSlots(1));
             console.log('Total Level 1 Spell Slots: ' + character.getTotalSpellSlots(1));

@@ -299,6 +299,24 @@ class StatGrabber {
         return this.character['inspiration'];
     }
 
+    getKiPointsUsedAndMax(){
+        if (this.character === undefined){
+            return 0;
+        }
+        if (this.isClass('Monk')){
+            let maxKiPoints = 0;
+            let spentKiPoints = 0;
+            let classActions = this.character.actions.class;
+            classActions.forEach(action => {
+                if (action.name === 'Ki Points'){
+                    maxKiPoints = action.limitedUse.maxUses;
+                    spentKiPoints = action.limitedUse.numberUsed;
+                }
+            });
+            return [spentKiPoints, maxKiPoints];
+        }
+    }
+
     canCastSpells(){
         if (this.character === undefined){
             return false;
