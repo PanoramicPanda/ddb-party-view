@@ -299,6 +299,87 @@ class StatGrabber {
         return this.character['inspiration'];
     }
 
+    calculateTotalSpellSlots(){
+        if (this.character === undefined){
+            return 0;
+        }
+        let classList = this.character['classes'];
+        let totalEffectiveLevel = 0;
+        let warlockLevels = 0;
+        let nonWarlockCastingClasses = [];
+        let totalSpellSlots = [];
+
+        classList.forEach((charClass) => {
+            let name = charClass.definition.name;
+            let level = charClass.level;
+            let canCastSpells = charClass.definition.canCastSpells;
+            if (canCastSpells){
+                if (name !== 'Warlock'){
+                    let multiclassDivisor = charClass.definition.spellRules.multiClassSpellSlotDivisor;
+                    totalEffectiveLevel += Math.floor(level / multiclassDivisor);
+                    nonWarlockCastingClasses.push(charClass);
+                } else {
+                    warlockLevels += level;
+                }
+            }
+        });
+
+        if (nonWarlockCastingClasses.length === 1) {
+            let singleClass = nonWarlockCastingClasses[0];
+            totalSpellSlots = singleClass.definition.spellRules.levelSpellSlots.slice(1)[singleClass.level - 1];
+        }else{
+            const multiclassSpellSlotsTable = [
+                [2, 0, 0, 0, 0, 0, 0, 0, 0], // Level 1
+                [3, 0, 0, 0, 0, 0, 0, 0, 0], // Level 2
+                [4, 2, 0, 0, 0, 0, 0, 0, 0], // Level 3
+                [4, 3, 0, 0, 0, 0, 0, 0, 0], // Level 4
+                [4, 3, 2, 0, 0, 0, 0, 0, 0], // Level 5
+                [4, 3, 3, 0, 0, 0, 0, 0, 0], // Level 6
+                [4, 3, 3, 1, 0, 0, 0, 0, 0], // Level 7
+                [4, 3, 3, 2, 0, 0, 0, 0, 0], // Level 8
+                [4, 3, 3, 3, 1, 0, 0, 0, 0], // Level 9
+                [4, 3, 3, 3, 2, 0, 0, 0, 0], // Level 10
+                [4, 3, 3, 3, 2, 1, 0, 0, 0], // Level 11
+                [4, 3, 3, 3, 2, 1, 0, 0, 0], // Level 12
+                [4, 3, 3, 3, 2, 1, 1, 0, 0], // Level 13
+                [4, 3, 3, 3, 2, 1, 1, 0, 0], // Level 14
+                [4, 3, 3, 3, 2, 1, 1, 1, 0], // Level 15
+                [4, 3, 3, 3, 2, 1, 1, 1, 0], // Level 16
+                [4, 3, 3, 3, 2, 1, 1, 1, 1], // Level 17
+                [4, 3, 3, 3, 2, 1, 1, 1, 1], // Level 18
+                [4, 3, 3, 3, 2, 2, 1, 1, 1], // Level 19
+                [4, 3, 3, 3, 2, 2, 1, 1, 1], // Level 20
+            ];
+
+            totalSpellSlots = multiclassSpellSlotsTable[Math.min(totalEffectiveLevel, 20) - 1];
+        }
+
+        return totalSpellSlots;
+    }
+
+    getTotalSpellSlots(level){
+        let totalSpellSlots = this.calculateTotalSpellSlots();
+        if (totalSpellSlots === undefined){
+            return 0;
+        }
+        let slotsForLevel = totalSpellSlots[level - 1] || 0;
+
+        let classList = this.character['classes'];
+        let warlockLevels = 0;
+        classList.forEach((charClass) => {
+            if (charClass.definition.name === 'Warlock'){
+                warlockLevels += charClass.level;
+            }
+        });
+
+        if (warlockLevels > 0) {
+            const warlockSpellSlots = classList.find((charClass) => charClass.definition.name === 'Warlock').definition.spellRules.levelSpellSlots.slice(1)[warlockLevels - 1];
+            slotsForLevel += warlockSpellSlots[level-1];
+        }
+
+        return slotsForLevel
+    }
+
     getUsedSpellSlots(level){
         if (this.character === undefined){
             return 0;
