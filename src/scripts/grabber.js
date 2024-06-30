@@ -437,6 +437,19 @@ class StatGrabber {
         let maxSlots = this.getTotalSpellSlots(level);
         return [usedSlots, maxSlots];
     }
+
+    calcHitDieUsedAndMax(){
+        if (this.character === undefined){
+            return 0;
+        }
+        let hitDieUsed = 0;
+        let hitDieMax = this.getTotalLevel();
+        let classList = this.character['classes'];
+        for (let charClass of classList) {
+            hitDieUsed += charClass.hitDiceUsed
+        }
+        return [hitDieUsed, hitDieMax];
+    }
 }
 
 export default StatGrabber;

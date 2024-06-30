@@ -18,6 +18,7 @@ CHARACTER_IDS.forEach(async (charId) => {
         console.log('Current HP ' + character.getCurrentHP());
         console.log('AC ' + character.calcAC());
         console.log('Has Inspiration: ' + character.getInspiration());
+        console.log('Hit Dice [used, max]: ' + character.calcHitDieUsedAndMax());
         if (character.isClass('Monk')){
             console.log('Ki Points [used, max]: ' + character.getKiPointsUsedAndMax());
         }
