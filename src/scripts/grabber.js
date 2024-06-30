@@ -1,3 +1,4 @@
+/* eslint-disable no-prototype-builtins */
 import {API_ENDPOINT as CONFIG_API_ENDPOINT} from './config.js';
 import { MANUAL_AC_BONUSES} from "./config.js";
 
@@ -30,7 +31,6 @@ class StatGrabber {
             } else {
                 const text = await response.text();
                 console.error('Response is not JSON:', text);
-                throw new Error('Response is not JSON');
             }
         } catch (error) {
             console.error('Error fetching character:', error);
@@ -114,8 +114,7 @@ class StatGrabber {
         let conScore = this.getAbilityScore('CON');
         let conMod = this.calculateAbilityModifier(conScore);
         let level = this.getTotalLevel();
-        let maxHP = baseHP + (level * conMod);
-        return maxHP;
+        return baseHP + (level * conMod);
     }
 
     getCurrentHP() {
@@ -127,8 +126,7 @@ class StatGrabber {
         this.tempHP = this.character['temporaryHitPoints'];
         let bonusHPInput = this.character['bonusHitPoints'];
         let bonusHP = Number.isInteger(bonusHPInput) ? bonusHPInput : 0;
-        let hpRemaining = maxHP - removedHP + this.tempHP + bonusHP;
-        return hpRemaining;
+        return maxHP - removedHP + this.tempHP + bonusHP;
     }
 
     calcEquipmentAC() {
@@ -146,8 +144,7 @@ class StatGrabber {
                             AC += item.definition.armorClass + dexMod;
                             break;
                         case 2: // Medium Armor
-                            let dexBonus = Math.min(dexMod, 2);
-                            AC += item.definition.armorClass + dexBonus;
+                            AC += item.definition.armorClass + Math.min(dexMod, 2);
                             break;
                         case 3: // Heavy Armor
                             AC += item.definition.armorClass;
@@ -335,10 +332,10 @@ class StatGrabber {
         if (this.character === undefined){
             return 0;
         }
-        let classList = this.character['classes'];
+        let classList = this.character.classes;
         let totalEffectiveLevel = 0;
         let nonWarlockCastingClasses = [];
-        let totalSpellSlots = [];
+        let totalSpellSlots;
 
         classList.forEach((charClass) => {
             let name = charClass.definition.name;
