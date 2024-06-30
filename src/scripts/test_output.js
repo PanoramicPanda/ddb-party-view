@@ -22,6 +22,7 @@ CHARACTER_IDS.forEach(async (charId) => {
         console.log('Passive Insight ' + character.getPassiveInsight());
         console.log('Has Inspiration: ' + character.getInspiration());
         console.log('Hit Dice [used, max]: ' + character.calcHitDieUsedAndMax());
+        console.log('Conditions: ' + character.getConditions());
         if (character.isClass('Monk')){
             console.log('Ki Points [used, max]: ' + character.getKiPointsUsedAndMax());
         }

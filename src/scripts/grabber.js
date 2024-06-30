@@ -520,6 +520,78 @@ class StatGrabber {
         let magicBonus = this.getTotalBonusFromItems('passive-insight');
         return 10 + wisMod + (profMultiplier * profBonus) + magicBonus;
     }
+
+    getConditions(){
+        if (this.character === undefined){
+            return [];
+        }
+        let conditions = [];
+        let conditionsList = this.character['conditions'];
+        conditionsList.forEach((condition) => {
+            switch (condition['id']){
+                case 1:
+                    conditions.push('Blinded');
+                    break;
+                case 2:
+                    conditions.push('Charmed');
+                    break;
+                case 3:
+                    conditions.push('Deafened');
+                    break;
+                case 4:
+                    conditions.push('Exhasution');
+                    break;
+                case 5:
+                    conditions.push('Frightened');
+                    break;
+                case 6:
+                    conditions.push('Grappled');
+                    break;
+                case 7:
+                    conditions.push('Incapacitated');
+                    break;
+                case 8:
+                    conditions.push('Invisible');
+                    break;
+                case 9:
+                    conditions.push('Paralyzed');
+                    break;
+                case 10:
+                    conditions.push('Petrified');
+                    break;
+                case 11:
+                    conditions.push('Poisoned');
+                    break;
+                case 12:
+                    conditions.push('Prone');
+                    break;
+                case 13:
+                    conditions.push('Restrained');
+                    break;
+                case 14:
+                    conditions.push('Stunned');
+                    break;
+                case 15:
+                    conditions.push('Unconscious');
+                    break;
+            }
+        });
+        return conditions;
+    }
+
+    getExhaustionLevel(){
+        if (this.character === undefined){
+            return 0;
+        }
+        let conditionsList = this.character['conditions'];
+        let exhaustionLevel = 0;
+        conditionsList.forEach((condition) => {
+            if (condition['id'] === 4){
+                exhaustionLevel = condition['level'];
+            }
+        });
+        return exhaustionLevel;
+    }
 }
 
 export default StatGrabber;
