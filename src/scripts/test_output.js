@@ -17,6 +17,9 @@ CHARACTER_IDS.forEach(async (charId) => {
         console.log('Max HP ' + character.getMaxHP());
         console.log('Current HP ' + character.getCurrentHP());
         console.log('AC ' + character.calcAC());
+        console.log('Passive Perception ' + character.getPassivePerception());
+        console.log('Passive Investigation ' + character.getPassiveInvestigation());
+        console.log('Passive Insight ' + character.getPassiveInsight());
         console.log('Has Inspiration: ' + character.getInspiration());
         console.log('Hit Dice [used, max]: ' + character.calcHitDieUsedAndMax());
         if (character.isClass('Monk')){

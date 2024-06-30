@@ -129,6 +129,27 @@ class StatGrabber {
         return maxHP - removedHP + this.tempHP + bonusHP;
     }
 
+    getTotalBonusFromItems(bonusSubType){
+        if (this.character === undefined){
+            return 0;
+        }
+        let bonusTotal = 0;
+
+        const modifiers = this.character['modifiers'];
+        for (let mod in modifiers){
+            for (let entry of modifiers[mod]){
+                if (entry['type'] === 'bonus' && entry['subType'] === bonusSubType && entry['isGranted']){
+                    if (this.seenGrantedModifiers.includes(entry['id'])){
+                        continue;
+                    }
+                    bonusTotal += entry['value'];
+                }
+            }
+        }
+
+        return bonusTotal;
+    }
+
     calcEquipmentAC() {
         if (this.character === undefined){
             return 0;
@@ -252,17 +273,7 @@ class StatGrabber {
             return 0;
         }
         let bonusAC = 0;
-        const modifiers = this.character['modifiers'];
-        for (let mod in modifiers){
-            for (let entry of modifiers[mod]){
-                if (entry['type'] === 'bonus' && entry['subType'] === 'armor-class' && entry['isGranted']){
-                    if (this.seenGrantedModifiers.includes(entry['id'])){
-                        continue;
-                    }
-                    bonusAC += entry['value'];
-                }
-            }
-        }
+        bonusAC += this.getTotalBonusFromItems('armor-class');
 
         const characterValues = this.character['characterValues'];
         for (let entry of characterValues) {
@@ -446,6 +457,68 @@ class StatGrabber {
             hitDieUsed += charClass.hitDiceUsed
         }
         return [hitDieUsed, hitDieMax];
+    }
+
+    checkProficiency(skill){
+        if (this.character === undefined){
+            return 0;
+        }
+        let modifiers = this.character['modifiers'];
+        let profMultiplier = 0
+        for (let mod in modifiers){
+            for (let item of modifiers[mod]){
+                if (item.subType === skill && item.type === 'proficiency' && profMultiplier !== 2){
+                    profMultiplier = 1;
+                } else if (item.subType === skill && item.type === 'expertise'){
+                    profMultiplier = 2;
+                }
+            }
+        }
+        return profMultiplier;
+    }
+
+    getProficiencyBonus(){
+        let level = this.getTotalLevel();
+        let profBonus;
+        if (level < 5){
+            profBonus = 2;
+        } else if (level < 9){
+            profBonus = 3;
+        } else if (level < 13){
+            profBonus = 4;
+        } else if (level < 17){
+            profBonus = 5;
+        } else {
+            profBonus = 6;
+        }
+        return profBonus;
+    }
+
+    getPassivePerception(){
+        let wisScore = this.getAbilityScore('WIS');
+        let wisMod = this.calculateAbilityModifier(wisScore);
+        let profMultiplier = this.checkProficiency('perception');
+        let profBonus = this.getProficiencyBonus();
+        let magicBonus = this.getTotalBonusFromItems('passive-perception');
+        return 10 + wisMod + (profMultiplier * profBonus) + magicBonus;
+    }
+
+    getPassiveInvestigation(){
+        let intScore = this.getAbilityScore('INT');
+        let intMod = this.calculateAbilityModifier(intScore);
+        let profMultiplier = this.checkProficiency('investigation');
+        let profBonus = this.getProficiencyBonus();
+        let magicBonus = this.getTotalBonusFromItems('passive-investigation');
+        return 10 + intMod + (profMultiplier * profBonus) + magicBonus;
+    }
+
+    getPassiveInsight(){
+        let wisScore = this.getAbilityScore('WIS');
+        let wisMod = this.calculateAbilityModifier(wisScore);
+        let profMultiplier = this.checkProficiency('insight');
+        let profBonus = this.getProficiencyBonus();
+        let magicBonus = this.getTotalBonusFromItems('passive-insight');
+        return 10 + wisMod + (profMultiplier * profBonus) + magicBonus;
     }
 }
 
