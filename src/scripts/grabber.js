@@ -592,6 +592,56 @@ class StatGrabber {
         });
         return exhaustionLevel;
     }
+
+    getDarkvision(){
+        if (this.character === undefined){
+            return 0;
+        }
+        let darkvision = 0;
+        let modifiers = this.character['modifiers'];
+        for (let mod in modifiers){
+            for (let item of modifiers[mod]){
+                if (item.subType === 'darkvision'){
+                    if (item.type === 'set-base'){
+                        if (darkvision < item['value']){
+                            darkvision = item['value'];
+                        }
+                    }else if (item.type === 'sense') {
+                        darkvision += item['value'];
+                    }
+                }
+            }
+        }
+        return darkvision;
+    }
+
+    getTruesight(){
+        if (this.character === undefined){
+            return 0;
+        }
+        let trueSight = 0;
+        let modifiers = this.character['modifiers'];
+        for (let mod in modifiers){
+            for (let item of modifiers[mod]){
+                if (item.subType === 'truesight' && item.type === 'sense'){
+                    trueSight = item['value'];
+                }
+            }
+        }
+        return trueSight;
+    }
+
+    getCustomSenses(){
+        if (this.character === undefined){
+            return [];
+        }
+        let senses = [];
+        let customSenses = this.character['customSenses'];
+        customSenses.forEach((sense) => {
+            senses.push([sense['source'], sense['distance']]);
+        });
+        return senses;
+    }
 }
 
 export default StatGrabber;

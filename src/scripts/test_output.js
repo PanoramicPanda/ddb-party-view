@@ -23,6 +23,9 @@ CHARACTER_IDS.forEach(async (charId) => {
         console.log('Has Inspiration: ' + character.getInspiration());
         console.log('Hit Dice [used, max]: ' + character.calcHitDieUsedAndMax());
         console.log('Conditions: ' + character.getConditions());
+        console.log('Darkvision Range: ' + character.getDarkvision());
+        console.log('Truesight Range: ' + character.getTruesight());
+        console.log('Custom Senses: ' + character.getCustomSenses());
         if (character.isClass('Monk')){
             console.log('Ki Points [used, max]: ' + character.getKiPointsUsedAndMax());
         }
