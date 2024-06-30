@@ -298,6 +298,28 @@ class StatGrabber {
         }
         return this.character['inspiration'];
     }
+
+    getUsedSpellSlots(level){
+        if (this.character === undefined){
+            return 0;
+        }
+        let usedSlots = 0;
+        let spellSlots = this.character['spellSlots'];
+        for (let slot of spellSlots){
+            if (slot['level'] === level){
+                usedSlots += slot['used'];
+            }
+        }
+        if (this.character.hasOwnProperty('pactMagic')){
+            let pactSlots = this.character['pactMagic'];
+            for (let slot of pactSlots){
+                if (slot['level'] === level){
+                    usedSlots += slot['used'];
+                }
+            }
+        }
+        return usedSlots;
+    }
 }
 
 export default StatGrabber;
