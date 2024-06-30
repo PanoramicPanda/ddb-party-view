@@ -428,6 +428,15 @@ class StatGrabber {
         }
         return usedSlots;
     }
+
+    getSpellSlotsUsedAndMax(level){
+        if (this.character === undefined){
+            return 0;
+        }
+        let usedSlots = this.getUsedSpellSlots(level);
+        let maxSlots = this.getTotalSpellSlots(level);
+        return [usedSlots, maxSlots];
+    }
 }
 
 export default StatGrabber;
