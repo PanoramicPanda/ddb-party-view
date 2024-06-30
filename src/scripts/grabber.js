@@ -299,13 +299,26 @@ class StatGrabber {
         return this.character['inspiration'];
     }
 
+    canCastSpells(){
+        if (this.character === undefined){
+            return false;
+        }
+        let canCast = false;
+        let classList = this.character['classes'];
+        for (let charClass of classList){
+            if (charClass.definition.canCastSpells){
+                canCast = true;
+            }
+        }
+        return canCast;
+    }
+
     calculateTotalSpellSlots(){
         if (this.character === undefined){
             return 0;
         }
         let classList = this.character['classes'];
         let totalEffectiveLevel = 0;
-        let warlockLevels = 0;
         let nonWarlockCastingClasses = [];
         let totalSpellSlots = [];
 
@@ -313,14 +326,10 @@ class StatGrabber {
             let name = charClass.definition.name;
             let level = charClass.level;
             let canCastSpells = charClass.definition.canCastSpells;
-            if (canCastSpells){
-                if (name !== 'Warlock'){
-                    let multiclassDivisor = charClass.definition.spellRules.multiClassSpellSlotDivisor;
-                    totalEffectiveLevel += Math.floor(level / multiclassDivisor);
-                    nonWarlockCastingClasses.push(charClass);
-                } else {
-                    warlockLevels += level;
-                }
+            if (canCastSpells && name !== 'Warlock'){
+                let multiclassDivisor = charClass.definition.spellRules.multiClassSpellSlotDivisor;
+                totalEffectiveLevel += Math.floor(level / multiclassDivisor);
+                nonWarlockCastingClasses.push(charClass);
             }
         });
 
