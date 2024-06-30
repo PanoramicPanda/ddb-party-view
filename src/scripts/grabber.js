@@ -1,4 +1,5 @@
 import {API_ENDPOINT as CONFIG_API_ENDPOINT} from './config.js';
+import { MANUAL_AC_BONUSES} from "./config.js";
 
 const API_ENDPOINT = import.meta.env.VITE_ENV === 'development' ? import.meta.env.VITE_API_ENDPOINT : CONFIG_API_ENDPOINT;
 
@@ -39,6 +40,32 @@ class StatGrabber {
 
     setCharacter(data){
         this.character = data['data'];
+        this.classes = this.getClasses();
+        this.seenGrantedModifiers = [];
+    }
+
+    getClasses(){
+        if (this.character === undefined){
+            return [];
+        }
+        let classes = [];
+        for (let charClass of this.character['classes']){
+            classes.push([charClass['definition']['name'], charClass['level']]);
+        }
+        return classes;
+    }
+
+    isClass(className){
+        if (this.character === undefined){
+            return false;
+        }
+        let classExists = false;
+        for (let charClass of this.classes){
+            if (charClass[0] === className){
+                classExists = true;
+            }
+        }
+        return classExists;
     }
 
     calculateAbilityModifier(abilityScore) {
@@ -104,7 +131,7 @@ class StatGrabber {
         return hpRemaining;
     }
 
-    calcStandardAC() {
+    calcEquipmentAC() {
         if (this.character === undefined){
             return 0;
         }
@@ -112,37 +139,115 @@ class StatGrabber {
         let dexScore = this.getAbilityScore('DEX');
         let dexMod = this.calculateAbilityModifier(dexScore);
         this.character.inventory.forEach((item) => {
-            if (item.equipped && item.definition.filterType === 'Armor'){
-                switch (item.definition.armorTypeId){
-                    case 1: // Light Armor
-                        AC += item.definition.armorClass + dexMod;
-                        break;
-                    case 2: // Medium Armor
-                        let dexBonus = Math.min(dexMod, 2);
-                        AC += item.definition.armorClass + dexBonus;
-                        break;
-                    case 3: // Heavy Armor
-                        AC += item.definition.armorClass;
-                        break;
-                    case 4: // Shield
-                        AC += item.definition.armorClass;
-                        if (item.definition.hasOwnProperty('grantedModifiers')) {
-                            item.definition.grantedModifiers.forEach(modifier => {
-                                if (modifier.subType === 'armor-class') {
-                                    AC += modifier.value;
-                                }
-                            });
-                        }
-                        break;
+            if (item.equipped){
+                if (item.definition.filterType === 'Armor'){
+                    switch (item.definition.armorTypeId){
+                        case 1: // Light Armor
+                            AC += item.definition.armorClass + dexMod;
+                            break;
+                        case 2: // Medium Armor
+                            let dexBonus = Math.min(dexMod, 2);
+                            AC += item.definition.armorClass + dexBonus;
+                            break;
+                        case 3: // Heavy Armor
+                            AC += item.definition.armorClass;
+                            break;
+                        case 4: // Shield
+                            AC += item.definition.armorClass;
+                            break;
+                    }
+                    if (item.definition.hasOwnProperty('grantedModifiers')) {
+                        item.definition.grantedModifiers.forEach(modifier => {
+                            if (modifier.subType === 'armor-class') {
+                                this.seenGrantedModifiers.push(modifier.id);
+                                AC += modifier.value;
+                            }
+                        });
+                    }
+                }else{
+                    if (item.definition.hasOwnProperty('grantedModifiers')){
+                        item.definition.grantedModifiers.forEach(modifier => {
+                            if (modifier.subType === 'armor-class'){
+                                this.seenGrantedModifiers.push(modifier.id);
+                                AC += modifier.value;
+                            }
+                        });
+                    }
                 }
             }
         });
 
         if (AC === 0){
-            AC = 10 + dexMod;
+            AC = this.calcUnarmoredDefense();
         }
         return AC;
 
+    }
+
+    wearingArmor(){
+        let wearingArmor = 0;
+        this.character.inventory.forEach((item) => {
+            if (item.definition.filterType === 'Armor' && item.equipped && item.description.armorTypeId <= 4){
+                wearingArmor += 1;
+            }
+        });
+        return wearingArmor > 0;
+    }
+
+    calcBarbarianAC(){
+        if (this.wearingArmor()){
+            return this.calcEquipmentAC();
+        }else{
+            let dexScore = this.getAbilityScore('DEX');
+            let conScore = this.getAbilityScore('CON');
+            let dexMod = this.calculateAbilityModifier(dexScore);
+            let conMod = this.calculateAbilityModifier(conScore);
+            return 10 + dexMod + conMod;
+        }
+    }
+
+    calcMonkAC(){
+        if (this.wearingArmor()) {
+            return this.calcEquipmentAC();
+        }else {
+            let dexScore = this.getAbilityScore('DEX');
+            let wisScore = this.getAbilityScore('WIS');
+            let dexMod = this.calculateAbilityModifier(dexScore);
+            let wisMod = this.calculateAbilityModifier(wisScore);
+            return 10 + dexMod + wisMod;
+        }
+    }
+
+    calcUnarmoredDefense(){
+        if (this.wearingArmor()){
+            return 0;
+        }
+        let unarmoredDefense = 0;
+
+        if (this.isClass('Barbarian')){
+            unarmoredDefense = this.calcBarbarianAC();
+        } else if (this.isClass('Monk')){
+            unarmoredDefense = this.calcMonkAC();
+        } else {
+            let dexScore = this.getAbilityScore('DEX');
+            let dexMod = this.calculateAbilityModifier(dexScore);
+            unarmoredDefense = 10 + dexMod;
+        }
+
+        this.character.inventory.forEach((item) => {
+            if (item.equipped){
+                if (item.definition.hasOwnProperty('grantedModifiers')){
+                    item.definition.grantedModifiers.forEach(modifier => {
+                        if (modifier.subType === 'unarmored-armor-class'){
+                            this.seenGrantedModifiers.push(modifier.id);
+                            unarmoredDefense += modifier.value;
+                        }
+                    });
+                }
+            }
+        });
+
+        return unarmoredDefense;
     }
 
     calcBonusAC(){
@@ -153,7 +258,10 @@ class StatGrabber {
         const modifiers = this.character['modifiers'];
         for (let mod in modifiers){
             for (let entry of modifiers[mod]){
-                if (entry['type'] === 'bonus' && entry['subType'] === 'armor-class'){
+                if (entry['type'] === 'bonus' && entry['subType'] === 'armor-class' && entry['isGranted']){
+                    if (this.seenGrantedModifiers.includes(entry['id'])){
+                        continue;
+                    }
                     bonusAC += entry['value'];
                 }
             }
@@ -166,6 +274,12 @@ class StatGrabber {
             }
         }
 
+        MANUAL_AC_BONUSES.forEach((manualBonus) => {
+            if (this.character['name'] === manualBonus[0]){
+                bonusAC += manualBonus[1];
+            }
+        });
+
         return bonusAC;
     }
 
@@ -173,7 +287,7 @@ class StatGrabber {
         if (this.character === undefined){
             return 0;
         }
-        let standardAC = this.calcStandardAC();
+        let standardAC = this.calcEquipmentAC();
         let bonusAC = this.calcBonusAC();
         return standardAC + bonusAC;
     }
