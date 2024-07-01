@@ -39,8 +39,11 @@ const AllCharactersView = () => {
         <ThemeProvider theme={darkTheme}>
             <CssBaseline />
             <Box display="flex" flexDirection="column" alignItems="center" mt={2}>
-                <Button variant="contained" color="primary" onClick={refreshCharacters}>
-                    Refresh Characters
+                <Button variant="outlined"
+                        color="primary"
+                        size="small"
+                        onClick={refreshCharacters}>
+                    Refresh All Characters
                 </Button>
                 <Box mt={2} width="100%">
                     {CHARACTER_IDS.map((id) => (

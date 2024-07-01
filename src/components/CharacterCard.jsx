@@ -4,6 +4,8 @@ import hpStatusCalc from "../scripts/hpStatusCalc.js";
 import {
     Badge,
     Box,
+    Button,
+    IconButton,
     Typography,
     Table,
     TableBody,
@@ -15,11 +17,12 @@ import {
     Paper,
     Grid
 } from "@mui/material";
-import { LightMode, ShieldTwoTone } from "@mui/icons-material";
+import { LightMode, ShieldTwoTone, Refresh } from "@mui/icons-material";
 import "../css/characterCard.css";
 
 export function CharacterCard({ characterId, refreshKey, isDMMode }) {
     const [character, setCharacter] = useState();
+    const [refreshCharacter, setRefreshCharacter] = useState(0);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -37,7 +40,11 @@ export function CharacterCard({ characterId, refreshKey, isDMMode }) {
         };
 
         fetchData();
-    }, [characterId, refreshKey]);
+    }, [characterId, refreshKey, refreshCharacter]);
+
+    const handleRefresh = () => {
+        setRefreshCharacter((prev) => prev + 1);
+    };
 
     const canCastSpells = character && character.canCastSpells();
     const spellSlots = [];
@@ -173,9 +180,18 @@ export function CharacterCard({ characterId, refreshKey, isDMMode }) {
     return (
         <Box p={2} component={Paper} sx={{
             width: '100%',
-            borderRadius: '15px', // Adjust the value for more or less rounding
-            marginBottom: '15px'  // Adjust the value for desired gap between cards
+            borderRadius: '15px',
+            marginBottom: '15px',
+            position: 'relative'
         }}>
+            <IconButton
+                onClick={handleRefresh}
+                variant="outlined"
+                color="secondary"
+                sx={{ position: 'absolute', top: '0px', left: '0px' }}
+            >
+                <Refresh />
+            </IconButton>
             {character && (
                 <>
                     <Grid container justifyContent="space-between" alignItems="center" sx={{ width: '100%' }}>
@@ -197,10 +213,6 @@ export function CharacterCard({ characterId, refreshKey, isDMMode }) {
                                 </Grid>
                             </Grid>
                         </Grid>
-
-                        {/*//         console.log('Darkvision Range: ' + character.getDarkvision());*/}
-                        {/*//         console.log('Truesight Range: ' + character.getTruesight());*/}
-                        {/*//         console.log('Custom Senses: ' + character.getCustomSenses());*/}
 
                         <Grid item>
                             <Box display="flex" flexDirection="row" alignItems="center">
@@ -279,9 +291,11 @@ export function CharacterCard({ characterId, refreshKey, isDMMode }) {
                             )}
                         </Box>
                     </Box>
+
                     {conditions && conditions.length !== 0 && (
                         <Typography variant="body2" align="center"><b>Conditions:</b> {conditionList}</Typography>
                     )}
+
                     {canCastSpells && (
                         <TableContainer component={Paper} sx={{ mt: 2 }}>
                             <Typography variant="body2" align="center"><b>Spell Slots</b></Typography>
@@ -301,7 +315,9 @@ export function CharacterCard({ characterId, refreshKey, isDMMode }) {
                             </Table>
                         </TableContainer>
                     )}
+
                     {kiPoints}
+
                     {isDMMode && (
                         <Grid>
                             <Grid item>
