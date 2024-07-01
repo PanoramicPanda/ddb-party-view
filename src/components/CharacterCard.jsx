@@ -18,7 +18,7 @@ import {
 import { LightMode, ShieldTwoTone } from "@mui/icons-material";
 import "../css/characterCard.css";
 
-export function CharacterCard({ characterId }) {
+export function CharacterCard({ characterId, refreshKey, isDMMode }) {
     const [character, setCharacter] = useState();
 
     useEffect(() => {
@@ -37,7 +37,7 @@ export function CharacterCard({ characterId }) {
         };
 
         fetchData();
-    }, [characterId]);
+    }, [characterId, refreshKey]);
 
     const canCastSpells = character && character.canCastSpells();
     const spellSlots = [];
@@ -151,7 +151,7 @@ export function CharacterCard({ characterId }) {
     const { status: hpStatus, percentage: hpBarPercentage } = hpStatusCalc(currentHp, maxHp);
 
     return (
-        <Box p={2} component={Paper}    sx={{
+        <Box p={2} component={Paper} sx={{
             width: '100%',
             borderRadius: '15px', // Adjust the value for more or less rounding
             marginBottom: '15px'  // Adjust the value for desired gap between cards
