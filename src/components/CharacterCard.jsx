@@ -107,9 +107,9 @@ export function CharacterCard({ characterId, refreshKey, isDMMode }) {
 
     const getHitDieColor = (percentage) => {
         if (percentage === 100) return 'grey';
-        if (percentage > 50) return 'tomato';
-        if (percentage > 0) return 'yellowgreen';
-        return 'seagreen';
+        if (percentage > 50) return 'firebrick';
+        if (percentage > 0) return 'goldenrod';
+        return 'green';
     };
 
     const getHitDieHeight = (percentage) => {
@@ -232,9 +232,14 @@ export function CharacterCard({ characterId, refreshKey, isDMMode }) {
                                                 <clipPath id="clip-path">
                                                     <polygon points="12,2 19,9 12,16 5,9 12,2"/>
                                                 </clipPath>
+                                                <linearGradient id="shine-hit-die" x1="0%" y1="0%" x2="100%" y2="100%">
+                                                    <stop offset="0%" style={{ stopColor: 'white', stopOpacity: 0.8 }} />
+                                                    <stop offset="50%" style={{ stopColor: 'white', stopOpacity: 0 }} />
+                                                </linearGradient>
                                             </defs>
                                             <rect width="24" height="24" fill="darkslategray" clipPath="url(#clip-path)"/>
                                             <rect width="24" height="24" fill={hitDieColor} clipPath="url(#clip-path)" y={hitDieHeight}/>
+                                            <polygon points="12,2 19,9 12,16 5,9 12,2" fill={`url(#shine-hit-die)`} clipPath="url(#clip-path)" />
                                             <polygon points="12,2 19,9 12,16 5,9 12,2" stroke="dimgrey" fill="none"/>
                                             {isDMMode && (
                                                 <text x="12" y="12" textAnchor="middle" fontSize="8" fill="white">
