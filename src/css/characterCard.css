@@ -1,0 +1,34 @@
+.spellSlotDisplay{
+    width: 30px;
+    height: 50px;
+    padding: 10px !important;
+}
+
+.hp-bar-container, .ki-bar-container{
+    width: 75%;
+    height: 15px;
+    margin: 0 auto;
+    border: 2px solid dimgrey;
+    margin-bottom: 10px;
+    background-color: darkslategray; /* Light grey background for visibility */
+    position: relative;
+    border-radius: 7.5px;
+    overflow: hidden;
+}
+
+.hp-bar, .ki-bar {
+    height: 100%; /* Default color */
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.spellSlotOrb{
+    height: 100%;
+}
+
+.hit-die-icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
