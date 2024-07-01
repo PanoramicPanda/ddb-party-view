@@ -10,8 +10,5 @@
     "authors": ["Panoramic Panda"]
   },
   "kind": "webView",
-  "entryPoint": "/index.html",
-  "controls": {
-    "reload": true
-  }
+  "entryPoint": "/index.html"
 }
