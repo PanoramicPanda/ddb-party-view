@@ -24,17 +24,9 @@ class StatGrabber {
     async getCharacter() {
         let apiUrl = import.meta.env.VITE_ENV === 'development' ? `/api/${this.characterId}` : `${this.apiEndpoint}?character=${this.characterId}`;
         try {
-            const response = await fetch(apiUrl);
-            const contentType = response.headers.get("content-type");
-            if (contentType && contentType.indexOf("application/json") !== -1) {
-                return response.json(); // Directly return parsed JSON if content-type is JSON
-            } else {
-                const text = await response.text();
-                console.error('Response is not JSON:', text);
-            }
-        } catch (error) {
-            console.error('Error fetching character:', error);
-            throw error; // Rethrow the error to be caught in the calling function
+            return fetch(apiUrl);
+        } catch {
+            return null;
         }
     }
 
