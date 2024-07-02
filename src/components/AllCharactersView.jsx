@@ -43,14 +43,6 @@ const AllCharactersView = () => {
     return (
         <ThemeProvider theme={darkTheme}>
             <CssBaseline />
-            {selectedCreature && isDMMode && (
-                <SelectedCreatureCard
-                    isDMMode={isDMMode}
-                    creatureName={selectedCreature.name}
-                    currHp={selectedCreature.currHp}
-                    maxHp={selectedCreature.maxHp}
-                />
-            )}
             <Box display="flex" flexDirection="column" alignItems="center" mt={2}>
                 <Box display="flex" flexDirection="row" alignItems="center">
                     <Button
@@ -75,6 +67,14 @@ const AllCharactersView = () => {
                         />
                     )}
                 </Box>
+                {selectedCreature && isDMMode && (
+                    <SelectedCreatureCard
+                        isDMMode={isDMMode}
+                        creatureName={selectedCreature.name}
+                        currHp={selectedCreature.currHp}
+                        maxHp={selectedCreature.maxHp}
+                    />
+                )}
                 <Box mt={2} width="100%">
                     {CHARACTER_IDS.map((id) => (
                         <CharacterCard key={id} characterId={id} refreshKey={refreshKey} isDMMode={isDMMode} />
