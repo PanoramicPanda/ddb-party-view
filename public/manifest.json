@@ -10,5 +10,20 @@
     "authors": ["Panoramic Panda"]
   },
   "kind": "webView",
-  "entryPoint": "/index.html"
+  "entryPoint": "/index.html",
+  "api": {
+    "version": "0.1",
+    "initializeEarly": true,
+    "subscriptions": {
+      "creatures": {
+        "onCreatureSelectionChange": "handleCreatureSelectionChange"
+      }
+    },
+    "interop": {
+      "id": "f15f02fb-a4f0-4677-b6b6-dfb4655c7eec"
+    }
+  },
+  "icons": {
+    "64x64": "/icon.png"
+  }
 }
