@@ -14,4 +14,10 @@ export default defineConfig({
     }
   },
   plugins: [react()],
+  build: {
+    minify: 'terser',
+    terserOptions: {
+      keep_fnames: /handleCreatureSelectionChange/
+    }
+  }
 })

@@ -4,6 +4,8 @@ import hpStatusCalc from "../scripts/hpStatusCalc.js";
 import {
     Badge,
     Box,
+    Button,
+    IconButton,
     Typography,
     Table,
     TableBody,
@@ -15,11 +17,12 @@ import {
     Paper,
     Grid
 } from "@mui/material";
-import { LightMode, ShieldTwoTone } from "@mui/icons-material";
+import { LightMode, ShieldTwoTone, Refresh } from "@mui/icons-material";
 import "../css/characterCard.css";
 
-export function CharacterCard({ characterId }) {
+export function CharacterCard({ characterId, refreshKey, isDMMode }) {
     const [character, setCharacter] = useState();
+    const [refreshCharacter, setRefreshCharacter] = useState(0);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -37,7 +40,11 @@ export function CharacterCard({ characterId }) {
         };
 
         fetchData();
-    }, [characterId]);
+    }, [characterId, refreshKey, refreshCharacter]);
+
+    const handleRefresh = () => {
+        setRefreshCharacter((prev) => prev + 1);
+    };
 
     const canCastSpells = character && character.canCastSpells();
     const spellSlots = [];
@@ -82,6 +89,11 @@ export function CharacterCard({ characterId }) {
                             <rect width="30" height="30" fill={color} clipPath={`url(#clip-path-${i})`} y={height} />
                             <circle cx="15" cy="15" r="14" fill={`url(#shine-${i})`} clipPath={`url(#clip-path-${i})`} />
                             <circle cx="15" cy="15" r="14" stroke="dimgrey" strokeWidth="2" fill="none" />
+                            {isDMMode && (
+                                <text x="15" y="20" textAnchor="middle" fontSize="10" fill="white">
+                                    {totalSpellSlots - usedAndMax[0]}
+                                </text>
+                            )}
                         </svg>
                     )}
                 </TableCell>
@@ -95,9 +107,9 @@ export function CharacterCard({ characterId }) {
 
     const getHitDieColor = (percentage) => {
         if (percentage === 100) return 'grey';
-        if (percentage > 50) return 'tomato';
-        if (percentage > 0) return 'yellowgreen';
-        return 'seagreen';
+        if (percentage > 50) return 'firebrick';
+        if (percentage > 0) return 'goldenrod';
+        return 'green';
     };
 
     const getHitDieHeight = (percentage) => {
@@ -130,6 +142,21 @@ export function CharacterCard({ characterId }) {
                             backgroundImage: 'repeating-linear-gradient(45deg, rgba(0,0,0,0.2) 0, rgba(0,0,0,0.2) 10px, transparent 10px, transparent 20px)'
                         }}
                     />
+                    {isDMMode && (
+                        <Typography
+                            variant="body2"
+                            align="center"
+                            sx={{
+                                position: 'absolute',
+                                width: '100%',
+                                top: '50%',
+                                transform: 'translateY(-50%)',
+                                color: 'white'
+                            }}
+                        >
+                            {kiPointsUsed[1] - kiPointsUsed[0]}
+                        </Typography>
+                    )}
                 </Box>
             </Box>
         );
@@ -151,11 +178,20 @@ export function CharacterCard({ characterId }) {
     const { status: hpStatus, percentage: hpBarPercentage } = hpStatusCalc(currentHp, maxHp);
 
     return (
-        <Box p={2} component={Paper}    sx={{
+        <Box p={2} component={Paper} sx={{
             width: '100%',
-            borderRadius: '15px', // Adjust the value for more or less rounding
-            marginBottom: '15px'  // Adjust the value for desired gap between cards
+            borderRadius: '15px',
+            marginBottom: '15px',
+            position: 'relative'
         }}>
+            <IconButton
+                onClick={handleRefresh}
+                variant="outlined"
+                color="secondary"
+                sx={{ position: 'absolute', top: '0px', left: '0px' }}
+            >
+                <Refresh />
+            </IconButton>
             {character && (
                 <>
                     <Grid container justifyContent="space-between" alignItems="center" sx={{ width: '100%' }}>
@@ -177,6 +213,7 @@ export function CharacterCard({ characterId }) {
                                 </Grid>
                             </Grid>
                         </Grid>
+
                         <Grid item>
                             <Box display="flex" flexDirection="row" alignItems="center">
                                 <Box display="flex" flexDirection="column" alignItems="center" mr={2}>
@@ -195,16 +232,39 @@ export function CharacterCard({ characterId }) {
                                                 <clipPath id="clip-path">
                                                     <polygon points="12,2 19,9 12,16 5,9 12,2"/>
                                                 </clipPath>
+                                                <linearGradient id="shine-hit-die" x1="0%" y1="0%" x2="100%" y2="100%">
+                                                    <stop offset="0%" style={{ stopColor: 'white', stopOpacity: 0.8 }} />
+                                                    <stop offset="50%" style={{ stopColor: 'white', stopOpacity: 0 }} />
+                                                </linearGradient>
                                             </defs>
                                             <rect width="24" height="24" fill="darkslategray" clipPath="url(#clip-path)"/>
                                             <rect width="24" height="24" fill={hitDieColor} clipPath="url(#clip-path)" y={hitDieHeight}/>
+                                            <polygon points="12,2 19,9 12,16 5,9 12,2" fill={`url(#shine-hit-die)`} clipPath="url(#clip-path)" />
                                             <polygon points="12,2 19,9 12,16 5,9 12,2" stroke="dimgrey" fill="none"/>
+                                            {isDMMode && (
+                                                <text x="12" y="12" textAnchor="middle" fontSize="8" fill="white">
+                                                    {totalHitDie[1] - totalHitDie[0]}
+                                                </text>
+                                            )}
                                         </svg>
                                     </Box>
                                 </Box>
                             </Box>
                         </Grid>
                     </Grid>
+
+                    {isDMMode && (
+                        <Box mt={2}>
+                            <Typography variant="body2" align="left">
+                                <b>Senses:</b> Darkvision: {character.getDarkvision()}ft. | Truesight: {character.getTruesight()}ft.
+                                {character.getCustomSenses().map((sense, index) => (
+                                    <span key={index}> | {sense[0]}: {sense[1]}ft.</span>
+                                ))}
+                            </Typography>
+                        </Box>
+                    )}
+
+
 
                     <Box mt={2}>
                         <Typography align="center" variant="body2"><b>Status:</b> {hpStatus}</Typography>
@@ -219,11 +279,28 @@ export function CharacterCard({ characterId }) {
                                     backgroundImage: 'repeating-linear-gradient(45deg, rgba(0,0,0,0.2) 0, rgba(0,0,0,0.2) 10px, transparent 10px, transparent 20px)'
                                 }}
                             />
+                            {isDMMode && (
+                                <Typography
+                                    variant="body2"
+                                    align="center"
+                                    sx={{
+                                        position: 'absolute',
+                                        width: '100%',
+                                        top: '50%',
+                                        transform: 'translateY(-50%)',
+                                        color: 'white'
+                                    }}
+                                >
+                                    {currentHp} / {maxHp}
+                                </Typography>
+                            )}
                         </Box>
                     </Box>
+
                     {conditions && conditions.length !== 0 && (
                         <Typography variant="body2" align="center"><b>Conditions:</b> {conditionList}</Typography>
                     )}
+
                     {canCastSpells && (
                         <TableContainer component={Paper} sx={{ mt: 2 }}>
                             <Typography variant="body2" align="center"><b>Spell Slots</b></Typography>
@@ -243,7 +320,33 @@ export function CharacterCard({ characterId }) {
                             </Table>
                         </TableContainer>
                     )}
+
                     {kiPoints}
+
+                    {isDMMode && (
+                        <Grid>
+                            <Grid item>
+                                <TableContainer component={Paper} sx={{ mt: 2 }}>
+                                    <Table>
+                                        <TableHead>
+                                            <TableRow>
+                                                <TableCell align="center"><b>Passive Perception</b></TableCell>
+                                                <TableCell align="center"><b>Passive Investigation</b></TableCell>
+                                                <TableCell align="center"><b>Passive Insight</b></TableCell>
+                                            </TableRow>
+                                        </TableHead>
+                                        <TableBody>
+                                            <TableRow>
+                                                <TableCell align="center">{character.getPassivePerception()}</TableCell>
+                                                <TableCell align="center">{character.getPassiveInvestigation()}</TableCell>
+                                                <TableCell align="center">{character.getPassiveInsight()}</TableCell>
+                                            </TableRow>
+                                        </TableBody>
+                                    </Table>
+                                </TableContainer>
+                            </Grid>
+                        </Grid>
+                    )}
                 </>
             )}
         </Box>

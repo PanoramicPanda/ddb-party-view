@@ -4,7 +4,7 @@
     padding: 10px !important;
 }
 
-.hp-bar-container, .ki-bar-container{
+.hp-bar-container, .ki-bar-container {
     width: 75%;
     height: 15px;
     margin: 0 auto;
@@ -14,6 +14,8 @@
     position: relative;
     border-radius: 7.5px;
     overflow: hidden;
+    display: flex; /* Add this line */
+    align-items: center; /* Add this line */
 }
 
 .hp-bar, .ki-bar {
@@ -22,6 +24,7 @@
     top: 0;
     left: 0;
 }
+
 
 .spellSlotOrb{
     height: 100%;
