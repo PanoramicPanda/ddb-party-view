@@ -17,26 +17,22 @@ const AllCharactersView = () => {
         setRefreshKey((prevKey) => prevKey + 1);
     }, []);
 
-    useEffect(() => {
-        const cheatCode = ['w', 'w', 's', 's', 'a', 'd', 'a', 'd'];
-        let cheatCodePosition = 0;
-
-        const handleKeyDown = (event) => {
-            if (event.key === cheatCode[cheatCodePosition]) {
-                cheatCodePosition++;
-                if (cheatCodePosition === cheatCode.length) {
-                    setIsDMMode((prevMode) => !prevMode);
-                    cheatCodePosition = 0;
-                }
+    const checkDMMode = async () => {
+        try {
+            const clientMe = await TS.clients.whoAmI();
+            const clientInfo = await TS.players.getMoreInfo([clientMe.player.id]);
+            if (clientInfo[0].rights.canGm === true) {
+                setIsDMMode(true);
             } else {
-                cheatCodePosition = 0;
+                setIsDMMode(false);
             }
-        };
+        } catch (error) {
+            console.error("Failed to get client info:", error);
+        }
+    };
 
-        window.addEventListener('keydown', handleKeyDown);
-        return () => {
-            window.removeEventListener('keydown', handleKeyDown);
-        };
+    useEffect(() => {
+        checkDMMode();
     }, []);
 
     return (
