@@ -1,8 +1,8 @@
-import { CHARACTER_IDS } from '../scripts/config.js';
+import { CHARACTER_IDS, API_ENDPOINT, MANUAL_AC_BONUSES } from '../scripts/config.js';
 import { useState, useCallback, useEffect } from 'react';
 import { ThemeProvider } from "@mui/material/styles";
-import { CssBaseline, Button, Box, Switch, FormControlLabel } from "@mui/material";
-import { CharacterCard } from './CharacterCard.jsx';
+import { CssBaseline, Button, Box, Switch, FormControlLabel, Dialog, DialogTitle, DialogContent, TextField } from "@mui/material";
+import CharacterCard from './CharacterCard.jsx';
 import darkTheme from "../scripts/theme";
 import SelectedCreatureCard from "./SelectedCreatureCard";
 
