@@ -13,40 +13,36 @@ import { LightMode, ShieldTwoTone } from "@mui/icons-material";
 import "../css/characterCard.css";
 import hpStatusCalc from "../scripts/hpStatusCalc.js";
 
-const CharacterCard = ({ characterId, refreshKey, isDMMode }) => {
-    const [character, setCharacter] = useState();
+const CharacterCard = ({ characterId, refreshKey, isDMMode, apiEndpoint, manualACBonuses = [] }) => {
+    const [character, setCharacter] = useState(null);
     const [refreshCharacter, setRefreshCharacter] = useState(0);
+    const [fetchError, setFetchError] = useState(null);
 
     useEffect(() => {
         const fetchData = async () => {
             if (characterId) {
-                let characterStats = new StatGrabber(characterId);
+                let characterStats = new StatGrabber(characterId, apiEndpoint, manualACBonuses);
                 try {
                     const characterData = await characterStats.getCharacter();
                     const jsonData = await characterData.json();
                     characterStats.setCharacter(jsonData);
                     setCharacter(characterStats);
+                    setFetchError(null);
                 } catch (error) {
                     console.error("Failed to fetch character data:", error);
+                    setFetchError("Failed to fetch character data");
+                    // Keep the previous character state to ensure the component doesn't break
+                    setCharacter(null);
                 }
             }
         };
 
         fetchData();
-    }, [characterId, refreshKey, refreshCharacter]);
-
-    const currentHp = character ? character.getCurrentHP() : 0;
-    const maxHp = character ? character.getMaxHP() : 0;
-    const { status: hpStatus, percentage: hpBarPercentage } = hpStatusCalc(currentHp, maxHp);
-    const canCastSpells = character ? character.canCastSpells() : false;
-
-    const conditions = character ? character.getConditions() : [];
-    const isMonk = character ? character.isClass('Monk') : false;
+    }, [characterId, refreshKey, refreshCharacter, apiEndpoint, manualACBonuses]);
 
     const handleRefresh = () => {
         setRefreshCharacter((prev) => prev + 1);
     };
-
 
     return (
         <Box p={2} component={Paper} sx={{
@@ -55,7 +51,9 @@ const CharacterCard = ({ characterId, refreshKey, isDMMode }) => {
             marginBottom: '15px',
             position: 'relative'
         }}>
-            {character && (
+            {fetchError ? (
+                <Typography color="error">{fetchError}</Typography>
+            ) : character ? (
                 <>
                     <IconButton
                         onClick={handleRefresh}
@@ -75,11 +73,11 @@ const CharacterCard = ({ characterId, refreshKey, isDMMode }) => {
                                         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
                                         sx={{ color: 'orange' }}
                                     >
-                                        <Avatar src={character.character['avatarUrl']} alt={character.character['name']} sx={{ height: 65, width: 65, border: '3.5px solid dimgrey' }} />
+                                        <Avatar src={character.character?.avatarUrl || ''} alt={character.character?.name || 'Unknown'} sx={{ height: 65, width: 65, border: '3.5px solid dimgrey' }} />
                                     </Badge>
                                 </Grid>
                                 <Grid item>
-                                    <Typography variant="h5" noWrap>{character.character['name']}</Typography>
+                                    <Typography variant="h5" noWrap>{character.character?.name || 'Unknown'}</Typography>
                                     <Typography variant="body1" align="left"><b>Level:</b> {character.getTotalLevel()}</Typography>
                                 </Grid>
                             </Grid>
@@ -108,19 +106,21 @@ const CharacterCard = ({ characterId, refreshKey, isDMMode }) => {
                     )}
 
                     <HealthBar
-                        currentHp={currentHp}
-                        maxHp={maxHp}
-                        hpStatus={hpStatus}
-                        hpBarPercentage={hpBarPercentage}
+                        currentHp={character.getCurrentHP()}
+                        maxHp={character.getMaxHP()}
+                        hpStatus={hpStatusCalc(character.getCurrentHP(), character.getMaxHP()).status}
+                        hpBarPercentage={hpStatusCalc(character.getCurrentHP(), character.getMaxHP()).percentage}
                         isDMMode={isDMMode}
                     />
-                    {conditions && conditions.length !== 0 && (
-                        <Conditions conditions={conditions} />
+                    {character.getConditions() && character.getConditions().length !== 0 && (
+                        <Conditions conditions={character.getConditions()} />
                     )}
-                    {canCastSpells && <SpellSlots character={character} isDMMode={isDMMode} />}
-                    {isMonk && <KiPoints kiPointsUsed={character.getKiPointsUsedAndMax()} isDMMode={isDMMode} />}
+                    {character.canCastSpells() && <SpellSlots character={character} isDMMode={isDMMode} />}
+                    {character.isClass('Monk') && <KiPoints kiPointsUsed={character.getKiPointsUsedAndMax()} isDMMode={isDMMode} />}
                     {isDMMode && <Passives character={character} />}
                 </>
+            ) : (
+                <Typography>Loading...</Typography>
             )}
         </Box>
     );

@@ -24,7 +24,7 @@ const getStatusRangeHighlight = (status) => {
                 width: `calc(${rangeMaxWidth} - ${rangeMinWidth})`,
                 height: '100%',
                 borderRadius: '7.5px',
-                backgroundColor: 'rgba(255, 255, 255, 0.4)',
+                backgroundColor: 'rgba(255, 255, 255, 0.5)',
                 animation: 'blink 2s infinite'
             }}
         />

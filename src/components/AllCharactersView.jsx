@@ -1,16 +1,26 @@
-import { CHARACTER_IDS, API_ENDPOINT, MANUAL_AC_BONUSES } from '../scripts/config.js';
-import { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { ThemeProvider } from "@mui/material/styles";
-import { CssBaseline, Button, Box, Switch, FormControlLabel, Dialog, DialogTitle, DialogContent, TextField } from "@mui/material";
+import { CssBaseline, Button, Box, Switch, FormControlLabel, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Typography } from "@mui/material";
 import CharacterCard from './CharacterCard.jsx';
 import darkTheme from "../scripts/theme";
 import SelectedCreatureCard from "./SelectedCreatureCard";
+import { CHARACTER_IDS as DEFAULT_CHARACTER_IDS, API_ENDPOINT as DEFAULT_API_ENDPOINT, MANUAL_AC_BONUSES as DEFAULT_MANUAL_AC_BONUSES } from '../scripts/config.js';
 
 const AllCharactersView = () => {
     const [refreshKey, setRefreshKey] = useState(0);
     const [isDMMode, setIsDMMode] = useState(false);
     const [isGM, setIsGM] = useState(false);
     const [selectedCreature, setSelectedCreature] = useState(null);
+    const [openSettings, setOpenSettings] = useState(false);
+    const [apiEndpoint, setApiEndpoint] = useState(DEFAULT_API_ENDPOINT);
+    const [characterIds, setCharacterIds] = useState(DEFAULT_CHARACTER_IDS.join(', '));
+    const [manualACBonuses, setManualACBonuses] = useState(JSON.stringify(DEFAULT_MANUAL_AC_BONUSES));
+    const [error, setError] = useState('');
+
+    // Temporary state variables
+    const [tempApiEndpoint, setTempApiEndpoint] = useState(DEFAULT_API_ENDPOINT);
+    const [tempCharacterIds, setTempCharacterIds] = useState(DEFAULT_CHARACTER_IDS.join(', '));
+    const [tempManualACBonuses, setTempManualACBonuses] = useState(JSON.stringify(DEFAULT_MANUAL_AC_BONUSES));
 
     window.setSelectedCreature = setSelectedCreature;
 
@@ -40,6 +50,68 @@ const AllCharactersView = () => {
         setIsDMMode(event.target.checked);
     };
 
+    const handleOpenSettings = () => {
+        // Initialize temporary state with current values
+        setTempApiEndpoint(apiEndpoint);
+        setTempCharacterIds(characterIds);
+        setTempManualACBonuses(manualACBonuses);
+        setError('');
+        setOpenSettings(true);
+    };
+
+    const handleCloseSettings = () => {
+        setOpenSettings(false);
+    };
+
+    const handleSaveSettings = () => {
+        // Validate and apply settings
+        let isValid = true;
+        let validationMessage = "";
+
+        // Perform basic validation
+        try {
+            // Example of URL validation (basic)
+            new URL(tempApiEndpoint);
+        } catch (_) {
+            isValid = false;
+            validationMessage += "Invalid API URL. ";
+        }
+
+        // Check character IDs (ensure they are numbers and not empty)
+        const idsArray = tempCharacterIds.split(',').map(id => id.trim());
+        if (idsArray.some(id => isNaN(id) || id === "")) {
+            isValid = false;
+            validationMessage += "Invalid Character IDs. ";
+        }
+
+        // Validate manual AC bonuses (ensure correct format)
+        let parsedManualACBonuses = [];
+        try {
+            parsedManualACBonuses = JSON.parse(tempManualACBonuses);
+            if (!Array.isArray(parsedManualACBonuses) || parsedManualACBonuses.some(item => !Array.isArray(item) || item.length !== 2 || typeof item[0] !== "string" || typeof item[1] !== "number")) {
+                throw new Error();
+            }
+        } catch (error) {
+            isValid = false;
+            validationMessage += "Invalid Manual AC Bonuses format. ";
+        }
+
+        if (isValid) {
+            setApiEndpoint(tempApiEndpoint);
+            setCharacterIds(tempCharacterIds);
+            setManualACBonuses(JSON.stringify(parsedManualACBonuses));
+            setOpenSettings(false);
+            refreshCharacters(); // Refresh characters to apply new settings
+        } else {
+            console.error("Failed to save settings:", validationMessage);
+            setError(`Failed to save settings: ${validationMessage}`);
+        }
+    };
+
+    const parsedManualACBonuses = JSON.parse(manualACBonuses);
+
+    const idsArray = characterIds.split(',').map(id => id.trim());
+
     return (
         <ThemeProvider theme={darkTheme}>
             <CssBaseline />
@@ -54,17 +126,28 @@ const AllCharactersView = () => {
                         Refresh All Characters
                     </Button>
                     {isGM && (
-                        <FormControlLabel
-                            control={
-                                <Switch
-                                    checked={isDMMode}
-                                    onChange={handleDMModeToggle}
-                                    color="primary"
-                                />
-                            }
-                            label="DM Mode"
-                            sx={{ marginLeft: 2 }}
-                        />
+                        <>
+                            <FormControlLabel
+                                control={
+                                    <Switch
+                                        checked={isDMMode}
+                                        onChange={handleDMModeToggle}
+                                        color="primary"
+                                    />
+                                }
+                                label="DM Mode"
+                                sx={{ marginLeft: 2 }}
+                            />
+                            <Button
+                                variant="outlined"
+                                color="secondary"
+                                size="small"
+                                onClick={handleOpenSettings}
+                                sx={{ marginLeft: 2 }}
+                            >
+                                Settings
+                            </Button>
+                        </>
                     )}
                 </Box>
                 {selectedCreature && isDMMode && (
@@ -76,11 +159,57 @@ const AllCharactersView = () => {
                     />
                 )}
                 <Box mt={2} width="100%">
-                    {CHARACTER_IDS.map((id) => (
-                        <CharacterCard key={id} characterId={id} refreshKey={refreshKey} isDMMode={isDMMode} />
+                    {idsArray.map((id) => (
+                        <CharacterCard
+                            key={id}
+                            characterId={id}
+                            refreshKey={refreshKey}
+                            isDMMode={isDMMode}
+                            apiEndpoint={apiEndpoint}
+                            manualACBonuses={parsedManualACBonuses}
+                        />
                     ))}
                 </Box>
             </Box>
+            <Dialog open={openSettings} onClose={handleCloseSettings}>
+                <DialogTitle>Settings</DialogTitle>
+                <DialogContent>
+                    <TextField
+                        label="API Redirect URL (should be able to accept a ?characterId= query parameter)"
+                        value={tempApiEndpoint}
+                        onChange={(e) => setTempApiEndpoint(e.target.value)}
+                        fullWidth
+                        margin="dense"
+                    />
+                    <TextField
+                        label="Character IDs (comma separated)"
+                        value={tempCharacterIds}
+                        onChange={(e) => setTempCharacterIds(e.target.value)}
+                        fullWidth
+                        margin="dense"
+                    />
+                    <TextField
+                        label='Manual AC Overrides (comma separated arrays ["character name", ac_bonus])'
+                        value={tempManualACBonuses}
+                        onChange={(e) => setTempManualACBonuses(e.target.value)}
+                        fullWidth
+                        margin="dense"
+                    />
+                    {error && (
+                        <Typography color="error" variant="body2" sx={{ marginTop: 2 }}>
+                            {error}
+                        </Typography>
+                    )}
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleSaveSettings} variant="contained" color="primary">
+                        Save
+                    </Button>
+                    <Button onClick={handleCloseSettings} variant="outlined" color="secondary">
+                        Cancel
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </ThemeProvider>
     );
 }

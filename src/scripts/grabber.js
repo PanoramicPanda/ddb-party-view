@@ -1,15 +1,12 @@
 /* eslint-disable no-prototype-builtins */
-import {API_ENDPOINT as CONFIG_API_ENDPOINT} from './config.js';
-import { MANUAL_AC_BONUSES} from "./config.js";
-
-const API_ENDPOINT = import.meta.env.VITE_ENV === 'development' ? import.meta.env.VITE_API_ENDPOINT : CONFIG_API_ENDPOINT;
 
 class StatGrabber {
 
-    constructor(characterId) {
-        this.apiEndpoint = API_ENDPOINT;
+    constructor(characterId, apiEndpoint, manualAcBonuses=[]) {
+        this.apiEndpoint = apiEndpoint;
         this.characterId = characterId;
         this.tempHp = 0;
+        this.manualAcBonuses =  manualAcBonuses
         this.scoreLookups = {
             'STR': [0, 'strength-score'],
             'DEX': [1, 'dexterity-score'],
@@ -22,7 +19,7 @@ class StatGrabber {
 
     // perform a get request to a url with the character id as part of the url. It will return a json object
     async getCharacter() {
-        let apiUrl = import.meta.env.VITE_ENV === 'development' ? `/api/${this.characterId}` : `${this.apiEndpoint}?character=${this.characterId}`;
+        let apiUrl = `${this.apiEndpoint}?character=${this.characterId}`;
         try {
             return fetch(apiUrl);
         } catch {
@@ -274,11 +271,13 @@ class StatGrabber {
             }
         }
 
-        MANUAL_AC_BONUSES.forEach((manualBonus) => {
-            if (this.character['name'] === manualBonus[0]){
-                bonusAC += manualBonus[1];
-            }
-        });
+        if (Array.isArray(this.manualAcBonuses)) {
+            this.manualAcBonuses.forEach(bonus => {
+                if (bonus[0] === this.character['name']) {
+                    bonusAC += bonus[1];
+                }
+            });
+        }
 
         return bonusAC;
     }
