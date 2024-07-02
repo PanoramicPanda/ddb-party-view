@@ -177,6 +177,42 @@ export function CharacterCard({ characterId, refreshKey, isDMMode }) {
     const maxHp = character ? character.getMaxHP() : 0;
     const { status: hpStatus, percentage: hpBarPercentage } = hpStatusCalc(currentHp, maxHp);
 
+    const hpStatusRanges = {
+        'Healthy': { min: 91, max: 100 }, //10%
+        'Lightly Wounded': { min: 71, max: 90 }, //20%
+        'Moderately Wounded': { min: 31, max: 70 }, //40%
+        'Severely Wounded': { min: 11, max: 30 }, //20%
+        'Near Death': { min: 0, max: 10 } //10%
+    };
+
+
+    const getStatusRangeHighlight = (status, width) => {
+        const range = hpStatusRanges[status];
+
+        if (!range) {
+            console.error(`Undefined status range for: ${status}`);
+            return null;
+        }
+
+        const rangeMinWidth = `${range.min}%`;
+        const rangeMaxWidth = `${range.max}%`;
+
+        return (
+            <Box
+                className="hp-bar-highlight"
+                sx={{
+                    position: 'absolute',
+                    left: rangeMinWidth,
+                    width: `calc(${rangeMaxWidth} - ${rangeMinWidth})`,
+                    height: '100%',
+                    borderRadius: '7.5px',
+                    backgroundColor: 'rgba(255, 255, 255, 0.4)', // Adjust transparency
+                    animation: 'blink 2s infinite' // Add blinking animation// Adjust transparency
+                }}
+            />
+        );
+    };
+
     return (
         <Box p={2} component={Paper} sx={{
             width: '100%',
@@ -279,6 +315,7 @@ export function CharacterCard({ characterId, refreshKey, isDMMode }) {
                                     backgroundImage: 'repeating-linear-gradient(45deg, rgba(0,0,0,0.2) 0, rgba(0,0,0,0.2) 10px, transparent 10px, transparent 20px)'
                                 }}
                             />
+                            {getStatusRangeHighlight(hpStatus, hpBarPercentage)}
                             {isDMMode && (
                                 <Typography
                                     variant="body2"
@@ -376,10 +413,10 @@ const kiPointsStatusCalc = (currentKi, maxKi) => {
         return { status: 'Overflowing', percentage: 100 };
     } else if (kiPercentage > 70) {
         return { status: 'Abundant', percentage: 90 };
-    } else if (kiPercentage > 40) {
+    } else if (kiPercentage > 30) {
         return { status: 'Moderate', percentage: 70 };
     } else if (kiPercentage > 10) {
-        return { status: 'Low', percentage: 40 };
+        return { status: 'Low', percentage: 30 };
     } else {
         return { status: 'Depleted', percentage: 10 };
     }

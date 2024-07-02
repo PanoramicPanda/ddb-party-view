@@ -35,3 +35,17 @@
     justify-content: center;
     align-items: center;
 }
+
+@keyframes blink {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+.hp-bar-highlight {
+    background-color: rgba(255, 255, 255, 0.4); /* Adjust transparency */
+    animation: blink 2s infinite; /* Slow blinking effect */
+}
