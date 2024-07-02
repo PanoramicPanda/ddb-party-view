@@ -4,7 +4,6 @@ import { CssBaseline, Button, Box, Switch, FormControlLabel, Dialog, DialogTitle
 import CharacterCard from './CharacterCard.jsx';
 import darkTheme from "../scripts/theme";
 import SelectedCreatureCard from "./SelectedCreatureCard";
-import { CHARACTER_IDS as DEFAULT_CHARACTER_IDS, API_ENDPOINT as DEFAULT_API_ENDPOINT, MANUAL_AC_BONUSES as DEFAULT_MANUAL_AC_BONUSES } from '../scripts/config.js';
 
 const AllCharactersView = () => {
     const [refreshKey, setRefreshKey] = useState(0);
@@ -12,15 +11,15 @@ const AllCharactersView = () => {
     const [isGM, setIsGM] = useState(false);
     const [selectedCreature, setSelectedCreature] = useState(null);
     const [openSettings, setOpenSettings] = useState(false);
-    const [apiEndpoint, setApiEndpoint] = useState(DEFAULT_API_ENDPOINT);
-    const [characterIds, setCharacterIds] = useState(DEFAULT_CHARACTER_IDS.join(', '));
-    const [manualACBonuses, setManualACBonuses] = useState(JSON.stringify(DEFAULT_MANUAL_AC_BONUSES));
+    const [apiEndpoint, setApiEndpoint] = useState('');
+    const [characterIds, setCharacterIds] = useState('');
+    const [manualACBonuses, setManualACBonuses] = useState('');
     const [error, setError] = useState('');
 
     // Temporary state variables
-    const [tempApiEndpoint, setTempApiEndpoint] = useState(DEFAULT_API_ENDPOINT);
-    const [tempCharacterIds, setTempCharacterIds] = useState(DEFAULT_CHARACTER_IDS.join(', '));
-    const [tempManualACBonuses, setTempManualACBonuses] = useState(JSON.stringify(DEFAULT_MANUAL_AC_BONUSES));
+    const [tempApiEndpoint, setTempApiEndpoint] = useState('');
+    const [tempCharacterIds, setTempCharacterIds] = useState('');
+    const [tempManualACBonuses, setTempManualACBonuses] = useState('');
 
     window.setSelectedCreature = setSelectedCreature;
 
@@ -44,6 +43,7 @@ const AllCharactersView = () => {
 
     useEffect(() => {
         checkDMMode();
+        loadSettings();
     }, []);
 
     const handleDMModeToggle = (event) => {
@@ -63,7 +63,7 @@ const AllCharactersView = () => {
         setOpenSettings(false);
     };
 
-    const handleSaveSettings = () => {
+    const handleSaveSettings = async () => {
         // Validate and apply settings
         let isValid = true;
         let validationMessage = "";
@@ -99,14 +99,39 @@ const AllCharactersView = () => {
         }
 
         if (isValid) {
-            setApiEndpoint(tempApiEndpoint);
-            setCharacterIds(tempCharacterIds);
-            setManualACBonuses(tempManualACBonuses.trim() === "" ? "[]" : JSON.stringify(parsedManualACBonuses));
-            setOpenSettings(false);
-            refreshCharacters(); // Refresh characters to apply new settings
+            const settings = {
+                apiEndpoint: tempApiEndpoint,
+                characterIds: tempCharacterIds,
+                manualACBonuses: tempManualACBonuses.trim() === "" ? "[]" : JSON.stringify(parsedManualACBonuses),
+            };
+            try {
+                await TS.localStorage.campaign.setBlob(JSON.stringify(settings));
+                setApiEndpoint(tempApiEndpoint);
+                setCharacterIds(tempCharacterIds);
+                setManualACBonuses(settings.manualACBonuses);
+                setOpenSettings(false);
+                refreshCharacters(); // Refresh characters to apply new settings
+            } catch (error) {
+                console.error("Failed to save settings:", error);
+                setError(`Failed to save settings: ${error.message}`);
+            }
         } else {
             console.error("Failed to save settings:", validationMessage);
             setError(`Failed to save settings: ${validationMessage}`);
+        }
+    };
+
+    const loadSettings = async () => {
+        try {
+            const settingsBlob = await TS.localStorage.campaign.getBlob();
+            if (settingsBlob) {
+                const settings = JSON.parse(settingsBlob);
+                setApiEndpoint(settings.apiEndpoint || '');
+                setCharacterIds(settings.characterIds || '');
+                setManualACBonuses(settings.manualACBonuses || '');
+            }
+        } catch (error) {
+            console.error("Failed to load settings:", error);
         }
     };
 

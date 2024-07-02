@@ -17,7 +17,7 @@ export default defineConfig({
   build: {
     minify: 'terser',
     terserOptions: {
-      keep_fnames: /handleCreatureSelectionChange|checkDMMode/
+      keep_fnames: /handleCreatureSelectionChange|checkDMMode|handleSaveSettings|loadSettings/
     }
   }
 })
