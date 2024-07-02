@@ -86,20 +86,22 @@ const AllCharactersView = () => {
 
         // Validate manual AC bonuses (ensure correct format)
         let parsedManualACBonuses = [];
-        try {
-            parsedManualACBonuses = JSON.parse(tempManualACBonuses);
-            if (!Array.isArray(parsedManualACBonuses) || parsedManualACBonuses.some(item => !Array.isArray(item) || item.length !== 2 || typeof item[0] !== "string" || typeof item[1] !== "number")) {
-                throw new Error();
+        if (tempManualACBonuses.trim() !== "") {
+            try {
+                parsedManualACBonuses = JSON.parse(tempManualACBonuses);
+                if (!Array.isArray(parsedManualACBonuses) || parsedManualACBonuses.some(item => !Array.isArray(item) || item.length !== 2 || typeof item[0] !== "string" || typeof item[1] !== "number")) {
+                    throw new Error();
+                }
+            } catch (error) {
+                isValid = false;
+                validationMessage += "Invalid Manual AC Bonuses format. ";
             }
-        } catch (error) {
-            isValid = false;
-            validationMessage += "Invalid Manual AC Bonuses format. ";
         }
 
         if (isValid) {
             setApiEndpoint(tempApiEndpoint);
             setCharacterIds(tempCharacterIds);
-            setManualACBonuses(JSON.stringify(parsedManualACBonuses));
+            setManualACBonuses(tempManualACBonuses.trim() === "" ? "[]" : JSON.stringify(parsedManualACBonuses));
             setOpenSettings(false);
             refreshCharacters(); // Refresh characters to apply new settings
         } else {
@@ -108,7 +110,7 @@ const AllCharactersView = () => {
         }
     };
 
-    const parsedManualACBonuses = JSON.parse(manualACBonuses);
+    const parsedManualACBonuses = manualACBonuses.trim() === "" ? [] : JSON.parse(manualACBonuses);
 
     const idsArray = characterIds.split(',').map(id => id.trim());
 
