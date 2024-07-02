@@ -22,7 +22,7 @@ export function SelectedCreatureCard({ isDMMode, creatureName, currHp, maxHp }) 
                     <Box
                         className="hp-bar"
                         sx={{
-                            width: `${hpBarPercentage}%`,
+                            width: `${(currHp / maxHp) * 100}%`,
                             backgroundColor: hpStatusColor(hpStatus),
                             height: '100%',
                             borderRadius: '7.5px',
