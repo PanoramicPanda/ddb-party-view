@@ -1,7 +1,7 @@
 {
   "manifestVersion": 1,
   "name": "D&D Beyond Party View",
-  "summary": "A freshly generated symbiote",
+  "summary": "A view of the party members in a D&D Beyond campaign, plus some extra features. Needs an API proxy to work.",
   "descriptionFilePath": "/README.md",
   "version": "0.0.1",
   "license": "MIT",

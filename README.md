@@ -1,8 +1,56 @@
-# React + Vite
+# D&D Beyond Party View
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+D&D Beyond Party View is a TaleSpire Symbiote designed to provide a detailed view of character stats, health, and status within the game. This tool allows Dungeon Masters and players to keep track of important metrics in real-time.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- Real-time health and status tracking for characters.
+- Ability to manually override AC bonuses.
+- Configurable API endpoint for fetching character data.
+- Seamless integration with TaleSpire's campaign data storage.
+
+## Prerequisites
+
+- Node.js
+- TaleSpire
+- A Proxy to fetch D&D Beyond character data
+
+## Installation
+
+1. Clone the repository:
+
+```bash
+git clone https://github.com/yourusername/ts-party-summary.git
+cd ts-party-summary
+```
+
+2. Install dependencies:
+
+```bash
+npm install
+```
+
+3. Deploy to TaleSpire:
+
+```bash
+npm run deploy
+```
+## Usage
+
+- Open TaleSpire and load your campaign.
+- Access the Symbiote through the in-game browser.
+- Configure your API endpoint and character IDs through the settings menu.
+- Save your settings to the TaleSpire campaign storage.
+
+## Configuration
+### API Endpoint
+
+The API endpoint should be able to accept a ?characterId= query parameter to fetch character data.
+
+### Character IDs
+
+Character IDs should be provided as a comma-separated list in the settings. Ensure each ID is a valid number.
+
+### Manual AC Bonuses
+
+Manual AC bonuses can be added as comma-separated arrays in the format `["character name", ac_bonus]`. This allows you to manually adjust the AC for specific characters if needed.
