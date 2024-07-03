@@ -228,7 +228,7 @@ const AllCharactersView = () => {
                         margin="dense"
                     />
                     <TextField
-                        label='Manual AC Overrides (comma separated arrays ["character name", ac_bonus])'
+                        label='Manual AC Bonuses (comma separated arrays ["character name", ac_bonus])'
                         value={tempManualACBonuses}
                         onChange={(e) => setTempManualACBonuses(e.target.value)}
                         fullWidth
