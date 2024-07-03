@@ -45,7 +45,7 @@ npm run deploy
 ## Configuration
 ### API Endpoint
 
-The API endpoint should be able to accept a `?characterId=` query parameter to fetch character data.
+The API endpoint should be able to accept a `?characterId=` query parameter to fetch character data. Do not include `?characterId=` in this field (it's added by the grabber script).
 
 This should be an API Proxy that can hit `https://character-service.dndbeyond.com/character/v3/character/<character id>`, and uses the `?characterId=` parameter to fully form the URL.
 
