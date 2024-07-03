@@ -2,12 +2,36 @@ import React, { useEffect, useState } from "react";
 import { Box, Typography, Paper } from "@mui/material";
 import hpStatusCalc from "../scripts/hpStatusCalc.js";
 
-export function SelectedCreatureCard({ isDMMode, creatureName, currHp, maxHp }) {
+export function SelectedCreatureCard({ isDMMode, creatureName, creatureId, currHp, maxHp }) {
+    const [currentHp, setCurrentHp] = useState(currHp);
+    const [maximumHp, setMaximumHp] = useState(maxHp);
+
+    useEffect(() => {
+        setCurrentHp(currHp);
+        setMaximumHp(maxHp);
+    }, [currHp, maxHp]);
+
+    // Define the handleCreatureStateChange function
+    const handleCreatureStateChange = async (event) => {
+        if (event.kind === "creatureHpChanged") {
+            const updatedCreatureId = event.payload.id;
+            const selectedCreature = await TS.creatures.getSelectedCreatures();
+            const selectedCreatureId = selectedCreature[0].id;
+            if (updatedCreatureId === selectedCreatureId) {
+                const creatureHpStat = event.payload.hp;
+                setCurrentHp(creatureHpStat.value);
+                setMaximumHp(creatureHpStat.max);
+            }
+        }
+    };
+
+    window.handleCreatureStateChange = handleCreatureStateChange;
+
     if (!isDMMode) {
         return null;
     }
 
-    const { status: hpStatus, percentage: hpBarPercentage } = hpStatusCalc(currHp, maxHp);
+    const { status: hpStatus, percentage: hpBarPercentage } = hpStatusCalc(currentHp, maximumHp);
 
     return (
         <Box p={2} component={Paper} sx={{
@@ -22,7 +46,7 @@ export function SelectedCreatureCard({ isDMMode, creatureName, currHp, maxHp }) 
                     <Box
                         className="hp-bar"
                         sx={{
-                            width: `${(currHp / maxHp) * 100}%`,
+                            width: `${(currentHp / maximumHp) * 100}%`,
                             backgroundColor: hpStatusColor(hpStatus),
                             height: '100%',
                             borderRadius: '7.5px',
@@ -40,7 +64,7 @@ export function SelectedCreatureCard({ isDMMode, creatureName, currHp, maxHp }) 
                             color: 'white'
                         }}
                     >
-                        {currHp} / {maxHp}
+                        {currentHp} / {maximumHp}
                     </Typography>
                 </Box>
             </Box>

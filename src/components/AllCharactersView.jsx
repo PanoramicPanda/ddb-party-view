@@ -181,6 +181,7 @@ const AllCharactersView = () => {
                     <SelectedCreatureCard
                         isDMMode={isDMMode}
                         creatureName={selectedCreature.name}
+                        creatureId={selectedCreature.id}
                         currHp={selectedCreature.currHp}
                         maxHp={selectedCreature.maxHp}
                     />
