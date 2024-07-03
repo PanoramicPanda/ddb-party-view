@@ -38,7 +38,7 @@ const HealthBar = ({ currentHp, maxHp, hpStatus, hpBarPercentage, isDMMode }) =>
             <Box
                 className="hp-bar"
                 sx={{
-                    width: `${hpBarPercentage}%`,
+                    width: isDMMode ? `${currentHp / maxHp * 100}%` : `${hpBarPercentage}%`,
                     backgroundColor: hpStatusColor(hpStatus),
                     height: '100%',
                     borderRadius: '7.5px',
