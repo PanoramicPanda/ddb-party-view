@@ -45,7 +45,11 @@ npm run deploy
 ## Configuration
 ### API Endpoint
 
-The API endpoint should be able to accept a ?characterId= query parameter to fetch character data.
+The API endpoint should be able to accept a `?characterId=` query parameter to fetch character data.
+
+This should be an API Proxy that can hit `https://character-service.dndbeyond.com/character/v3/character/<character id>`, and uses the `?characterId=` parameter to fully form the URL.
+
+For more on setting up your own, give this article a read: <https://jakemccambley.medium.com/fixing-cors-errors-when-working-with-3rd-party-apis-a69dc5474804>
 
 ### Character IDs
 
