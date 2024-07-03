@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { ThemeProvider } from "@mui/material/styles";
-import { CssBaseline, Button, Box, Switch, FormControlLabel, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Typography } from "@mui/material";
+import { CssBaseline, Button, Box, Switch, FormControlLabel, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Typography, Paper } from "@mui/material";
 import CharacterCard from './CharacterCard.jsx';
 import darkTheme from "../scripts/theme";
 import SelectedCreatureCard from "./SelectedCreatureCard";
@@ -137,7 +137,7 @@ const AllCharactersView = () => {
 
     const parsedManualACBonuses = manualACBonuses.trim() === "" ? [] : JSON.parse(manualACBonuses);
 
-    const idsArray = characterIds.split(',').map(id => id.trim());
+    const idsArray = characterIds.split(',').map(id => id.trim()).filter(id => id !== "");
 
     return (
         <ThemeProvider theme={darkTheme}>
@@ -187,16 +187,27 @@ const AllCharactersView = () => {
                     />
                 )}
                 <Box mt={2} width="100%">
-                    {idsArray.map((id) => (
-                        <CharacterCard
-                            key={id}
-                            characterId={id}
-                            refreshKey={refreshKey}
-                            isDMMode={isDMMode}
-                            apiEndpoint={apiEndpoint}
-                            manualACBonuses={parsedManualACBonuses}
-                        />
-                    ))}
+                    {idsArray.length > 0 ? (
+                        idsArray.map((id) => (
+                            <CharacterCard
+                                key={id}
+                                characterId={id}
+                                refreshKey={refreshKey}
+                                isDMMode={isDMMode}
+                                apiEndpoint={apiEndpoint}
+                                manualACBonuses={parsedManualACBonuses}
+                            />
+                        ))
+                    ) : (
+                        <Box p={2} component={Paper} sx={{
+                            width: '100%', // Adjust width as needed
+                            borderRadius: '15px',
+                            marginBottom: '15px',
+                            textAlign: 'center'
+                        }}>
+                            <Typography variant="h6">Please add creature IDs in settings</Typography>
+                        </Box>
+                    )}
                 </Box>
             </Box>
             <Dialog open={openSettings} onClose={handleCloseSettings}>
