@@ -16,7 +16,8 @@
     "initializeEarly": true,
     "subscriptions": {
       "creatures": {
-        "onCreatureSelectionChange": "handleCreatureSelectionChange"
+        "onCreatureSelectionChange": "handleCreatureSelectionChange",
+        "onCreatureStateChange": "handleCreatureStateChange"
       }
     },
     "interop": {

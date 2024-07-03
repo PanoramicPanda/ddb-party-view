@@ -4,10 +4,10 @@ function hpStatusCalc(currentHp, maxHp) {
     return { status: 'Healthy', percentage: 100 };
   } else if (hpPercentage > 70) {
     return { status: 'Lightly Wounded', percentage: 90 };
-  } else if (hpPercentage > 40) {
+  } else if (hpPercentage > 30) {
     return { status: 'Moderately Wounded', percentage: 70 };
   } else if (hpPercentage > 10) {
-    return { status: 'Severely Wounded', percentage: 40 };
+    return { status: 'Severely Wounded', percentage: 30 };
   } else if (hpPercentage > 0) {
     return { status: 'Near Death', percentage: 10 };
   } else {
