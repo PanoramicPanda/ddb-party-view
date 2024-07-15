@@ -36,7 +36,7 @@ For more on setting up your own proxy, give this article a read: <https://jakemc
 
 ### Character IDs
 
-Character IDs should be provided as a comma-separated list in the settings. Ensure each ID is a valid number.
+Character IDs should be provided as a comma-separated list in the settings. Ensure each ID is a valid number. You can find these as part the url to the character sheet. You can test if its the right number by hitting `https://character-service.dndbeyond.com/character/v5/character/<character id>` with your browser.
 
 ### Manual AC Bonuses
 
