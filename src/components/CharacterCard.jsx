@@ -9,6 +9,7 @@ import Conditions from './Conditions';
 import Senses from './Senses';
 import KiPoints from './KiPoints';
 import Passives from "./Passives.jsx";
+import AvatarSection from "./AvatarSection.jsx";
 import { LightMode, ShieldTwoTone } from "@mui/icons-material";
 import "../css/characterCard.css";
 import hpStatusCalc from "../scripts/hpStatusCalc.js";
@@ -65,22 +66,7 @@ const CharacterCard = ({ characterId, refreshKey, isDMMode, apiEndpoint, manualA
                     </IconButton>
                     <Grid container justifyContent="space-between" alignItems="center" sx={{ width: '100%' }}>
                         <Grid item>
-                            <Grid container alignItems="center" spacing={2}>
-                                <Grid item>
-                                    <Badge
-                                        badgeContent={character.getInspiration() ? <LightMode /> : null}
-                                        overlap="circular"
-                                        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-                                        sx={{ color: 'orange' }}
-                                    >
-                                        <Avatar src={character.character?.avatarUrl || ''} alt={character.character?.name || 'Unknown'} sx={{ height: 65, width: 65, border: '3.5px solid dimgrey' }} />
-                                    </Badge>
-                                </Grid>
-                                <Grid item>
-                                    <Typography variant="h5" noWrap>{character.character?.name || 'Unknown'}</Typography>
-                                    <Typography variant="body1" align="left"><b>Level:</b> {character.getTotalLevel()}</Typography>
-                                </Grid>
-                            </Grid>
+                            <AvatarSection character={character} />
                         </Grid>
                         <Grid item>
                             <Box display="flex" flexDirection="row" alignItems="center">
