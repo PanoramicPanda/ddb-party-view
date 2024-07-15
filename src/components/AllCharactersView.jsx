@@ -239,6 +239,15 @@ const AllCharactersView = () => {
                             {error}
                         </Typography>
                     )}
+                    <Typography variant="body2" sx={{ marginTop: 2 }}>
+                        For more information on how to setup an API Proxy, go here (click to copy to clipboard):
+                        <span
+                            onClick={() => navigator.clipboard.writeText('https://github.com/PanoramicPanda/ddb-party-view/blob/main/README.md#api-endpoint')}
+                            style={{ cursor: 'pointer', color: '#1E90FF', textDecoration: 'underline', marginLeft: '5px' }}
+                        >
+                https://github.com/PanoramicPanda/ddb-party-view/blob/main/README.md#api-endpoint
+            </span>
+                    </Typography>
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleSaveSettings} variant="contained" color="primary">
