@@ -28,6 +28,7 @@ const CharacterCard = ({ characterId, refreshKey, isDMMode, apiEndpoint, manualA
                     const jsonData = await characterData.json();
                     characterStats.setCharacter(jsonData);
                     setCharacter(characterStats);
+                    console.log(characterStats);
                     setFetchError(null);
                 } catch (error) {
                     console.error("Failed to fetch character data:", error);
@@ -97,6 +98,9 @@ const CharacterCard = ({ characterId, refreshKey, isDMMode, apiEndpoint, manualA
                         hpStatus={hpStatusCalc(character.getCurrentHP(), character.getMaxHP()).status}
                         hpBarPercentage={hpStatusCalc(character.getCurrentHP(), character.getMaxHP()).percentage}
                         isDMMode={isDMMode}
+                        dying={character.isDying()}
+                        deathSaves={character.getDeathSaveSuccesses()}
+                        deathFails={character.getDeathSaveFailures()}
                     />
                     {character.getConditions() && character.getConditions().length !== 0 && (
                         <Conditions conditions={character.getConditions()} />

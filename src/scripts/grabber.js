@@ -570,6 +570,39 @@ class StatGrabber {
         return conditions;
     }
 
+    getDeathSaves(){
+        if (this.character === undefined){
+            return [];
+        }
+        let deathSaves = this.character['deathSaves'];
+        return deathSaves;
+    }
+
+    getDeathSaveFailures(){
+        if (this.character === undefined){
+            return 0;
+        }
+        let deathSaves = this.getDeathSaves();
+        return deathSaves['failCount'];
+    }
+
+    getDeathSaveSuccesses(){
+        if (this.character === undefined){
+            return 0;
+        }
+        let deathSaves = this.getDeathSaves();
+        return deathSaves['successCount'];
+    }
+
+    getStability(){
+        if (this.character === undefined){
+            return 0;
+        }
+        let deathSaves = this.getDeathSaves();
+        console.log("Stability: ", deathSaves['isStabilized'])
+        return deathSaves['isStabilized'];
+    }
+
     getExhaustionLevel(){
         if (this.character === undefined){
             return 0;
@@ -632,6 +665,16 @@ class StatGrabber {
             senses.push([sense['source'], sense['distance']]);
         });
         return senses;
+    }
+
+    isDying(){
+        if (this.character === undefined){
+            return false;
+        }
+        let currentHP = this.getCurrentHP();
+        let stabilized = this.getStability();
+        console.log("Dying: ", currentHP <= 0 && !stabilized)
+        return currentHP <= 0 && !stabilized;
     }
 }
 

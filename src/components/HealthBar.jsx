@@ -31,9 +31,56 @@ const getStatusRangeHighlight = (status) => {
     );
 };
 
-const HealthBar = ({ currentHp, maxHp, hpStatus, hpBarPercentage, isDMMode }) => (
+const renderCircles = (count, total, color) => {
+    return Array.from({ length: total }, (_, i) => (
+        <Box key={i} sx={{ width: 30, height: 30, marginRight: 1 }}>
+            <svg width="30" height="30" viewBox="0 0 30 30">
+                <defs>
+                    <clipPath id={`clip-path-${i}`}>
+                        <circle cx="15" cy="15" r="14" />
+                    </clipPath>
+                    <linearGradient id={`shine-${i}`} x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style={{ stopColor: 'white', stopOpacity: 0.8 }} />
+                        <stop offset="50%" style={{ stopColor: 'white', stopOpacity: 0 }} />
+                    </linearGradient>
+                </defs>
+                <circle cx="15" cy="15" r="14" stroke="dimgrey" strokeWidth="2" fill="darkslategray" />
+                <rect width="30" height="30" fill={i < count ? color : 'darkslategray'} clipPath={`url(#clip-path-${i})`} y="0%" />
+                <circle cx="15" cy="15" r="14" fill={`url(#shine-${i})`} clipPath={`url(#clip-path-${i})`} />
+                <circle cx="15" cy="15" r="14" stroke="dimgrey" strokeWidth="2" fill="none" />
+            </svg>
+        </Box>
+    ));
+};
+
+const renderSavesAndFails = (deathSaves, deathFails) => {
+    return (
+        <Box mt={1}>
+            <Typography align="center" variant="body2"><b>Death Saves</b></Typography>
+            <Box display="flex" justifyContent="center" mb={1}>
+                <Box display="flex" flexDirection="row" alignItems="center" marginRight={'20px'}>
+                    {renderCircles(deathSaves, 3, 'green')}
+                </Box>
+                <Box display="flex" flexDirection="row" alignItems="center">
+                    {renderCircles(deathFails, 3, 'red')}
+                </Box>
+            </Box>
+        </Box>
+    );
+};
+
+const HealthBar = ({ currentHp, maxHp, hpStatus, hpBarPercentage, isDMMode, dying, deathSaves, deathFails }) => (
     <Box mt={2}>
-        <Typography align="center" variant="body2"><b>Status:</b> {hpStatus}</Typography>
+        {isDMMode && dying ? (
+            deathFails <= 2 ? (
+                <Typography align="center" variant="body2"><b>Status:</b> Dying</Typography>
+            ) : (
+                <Typography align="center" variant="body2"><b>Status:</b> Dead</Typography>
+            )
+        ) : (
+            <Typography align="center" variant="body2"><b>Status:</b> {hpStatus}</Typography>
+        )}
+        {isDMMode && dying && renderSavesAndFails(deathSaves, deathFails)}
         <Box className="hp-bar-container">
             <Box
                 className="hp-bar"
