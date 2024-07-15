@@ -28,7 +28,6 @@ const CharacterCard = ({ characterId, refreshKey, isDMMode, apiEndpoint, manualA
                     const jsonData = await characterData.json();
                     characterStats.setCharacter(jsonData);
                     setCharacter(characterStats);
-                    console.log(characterStats);
                     setFetchError(null);
                 } catch (error) {
                     console.error("Failed to fetch character data:", error);
