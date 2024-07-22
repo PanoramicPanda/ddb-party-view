@@ -214,7 +214,7 @@ const AllCharactersView = () => {
                 <DialogTitle>Settings</DialogTitle>
                 <DialogContent>
                     <TextField
-                        label="API Redirect URL (should be able to accept a ?characterId= query parameter)"
+                        label="API Redirect URL (should be able to accept a ?character= query parameter)"
                         value={tempApiEndpoint}
                         onChange={(e) => setTempApiEndpoint(e.target.value)}
                         fullWidth
