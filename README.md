@@ -26,11 +26,11 @@ D&D Beyond Party View is a TaleSpire Symbiote designed to provide a detailed vie
 ## In Symbiote Options
 ### API Endpoint
 
-You need to provide an API Proxy Endpoint for the Symbiote to hit in order for it to work at all. **This is a cruical step**. This should be an API Proxy that can hit `https://character-service.dndbeyond.com/character/v5/character/<character id>`, and uses the `?characterId=` parameter to fully form the URL.
+You need to provide an API Proxy Endpoint for the Symbiote to hit in order for it to work at all. **This is a cruical step**. This should be an API Proxy that can hit `https://character-service.dndbeyond.com/character/v5/character/<character id>`, and uses the `?character=` parameter to fully form the URL.
 
-The API proxy endpoint should be able to accept a `?characterId=` query parameter to fetch character data. Do not include `?characterId=` in the setting field (it's added by the grabber script).
+The API proxy endpoint should be able to accept a `?character=` query parameter to fetch character data. Do not include `?character=` in the setting field (it's added by the grabber script).
 
-For example, if I set up my proxy to be `http://proxy-test.example/api` then it should be able to accept `http://proxy-test.example/api?characterId=48690485` and would redirect to `https://character-service.dndbeyond.com/character/v5/character/48690485`. When supplied to the Symbiote's settings window, I'd only input `http://proxy-test.example/api`.
+For example, if I set up my proxy to be `http://proxy-test.example/api` then it should be able to accept `http://proxy-test.example/api?character=48690485` and would redirect to `https://character-service.dndbeyond.com/character/v5/character/48690485`. When supplied to the Symbiote's settings window, I'd only input `http://proxy-test.example/api`.
 
 For more on setting up your own proxy, give this article a read: <https://jakemccambley.medium.com/fixing-cors-errors-when-working-with-3rd-party-apis-a69dc5474804>. I recommend using Heroku as the server backend, just as the article does.
 
