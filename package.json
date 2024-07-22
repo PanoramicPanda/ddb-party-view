@@ -8,7 +8,8 @@
     "build": "vite build",
     "deploy": "vite build && node deploy_to_ts.js",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "build-and-zip": "node build_and_zip.js"
   },
   "dependencies": {
     "@emotion/react": "^11.11.4",
@@ -16,7 +17,8 @@
     "@mui/icons-material": "^5.15.21",
     "@mui/material": "^5.15.21",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1",
+    "zip-a-folder": "^3.1.7"
   },
   "devDependencies": {
     "@types/react": "^18.3.3",

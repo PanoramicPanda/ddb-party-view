@@ -23,3 +23,7 @@ dist-ssr
 *.sln
 *.sw?
 /src/scripts/config.js
+
+# TaleSpire Symbiote Stuff
+mod-io-build
+*.zip
