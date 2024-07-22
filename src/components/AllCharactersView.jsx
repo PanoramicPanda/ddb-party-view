@@ -165,17 +165,17 @@ const AllCharactersView = () => {
                                 label="DM Mode"
                                 sx={{ marginLeft: 2 }}
                             />
-                            <Button
-                                variant="outlined"
-                                color="secondary"
-                                size="small"
-                                onClick={handleOpenSettings}
-                                sx={{ marginLeft: 2 }}
-                            >
-                                Settings
-                            </Button>
                         </>
                     )}
+                    <Button
+                        variant="outlined"
+                        color="secondary"
+                        size="small"
+                        onClick={handleOpenSettings}
+                        sx={{ marginLeft: 2 }}
+                    >
+                        Settings
+                    </Button>
                 </Box>
                 {selectedCreature && isDMMode && (
                     <SelectedCreatureCard
